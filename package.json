@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Naxisigut/DemoVue3/issues"
   },
-  "homepage": "https://github.com/Naxisigut/DemoVue3#readme"
+  "homepage": "https://github.com/Naxisigut/DemoVue3#readme",
+  "devDependencies": {
+    "vitest": "^0.34.1"
+  }
 }
