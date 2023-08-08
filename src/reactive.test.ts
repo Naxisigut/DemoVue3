@@ -12,10 +12,6 @@ describe('reactive', () => {
   test('reactive set', () => {
     const target = {a: 1}
     const proxy = reactive(target)
-
-    // effect
-
-
     target.a = 2
     expect(proxy.a).toBe(2)
   })
