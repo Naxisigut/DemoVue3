@@ -1,6 +1,22 @@
-import { test, expect } from 'vitest';
-import { add } from './reactive';
+import { test, expect, describe, it } from 'vitest';
+import { reactive } from './reactive';
 
-test('init', ()=>{
-  expect(add(1, 2)).toBe(3)
+describe('reactive', () => {
+  test('reactive get', ()=>{
+    const target = { a: 1 }
+    const proxy = reactive(target)
+    expect(proxy).not.toBe(target)
+    expect(proxy.a).toBe(1)
+  })
+  
+  test('reactive set', () => {
+    const target = {a: 1}
+    const proxy = reactive(target)
+
+    // effect
+
+
+    target.a = 2
+    expect(proxy.a).toBe(2)
+  })
 })
