@@ -1,11 +1,14 @@
 class ReactiveEffect{
   private fn: Function
   public schedular: any
+  public deps: Set<Set<ReactiveEffect>>
   constructor(_fn, schedular){
     this.fn = _fn
     this.schedular = schedular
+    this.deps = new Set()
   }
   run(){
+    activeEffect = this
     this.fn()
   }
 }
@@ -37,6 +40,10 @@ export function track(target, key){
   }
   
   keyDeps.add(activeEffect) // 收集依赖
+
+  // 一个effect可能对应多个target的key，所以可能位于targetDepsMap的不同位置
+  // 一个target的key也可能有多个effect
+  activeEffect.deps.add(keyDeps) 
   // console.log('track', keyDeps);
 }
 
@@ -45,20 +52,29 @@ export function track(target, key){
 export function trigger(target, key){
   const targetDeps = targetDepsMap.get(target)
   const keyDeps = targetDeps.get(key) as Set<ReactiveEffect>
-  for (const dep of keyDeps) {
+  console.log(targetDepsMap);
+  for (const effect of keyDeps) {
     // 在trigger时，schedular优先于run
-    if(dep.schedular){
-      dep.schedular()
-    }else dep.run()
+    if(effect.schedular){
+      effect.schedular()
+    }else effect.run()
   }
+}
+
+export function stop(runner){
+  const effect = runner.effect as ReactiveEffect
+  for (const keyDeps of effect.deps) {
+    keyDeps.delete(effect)
+  }
+  console.log('stop', targetDepsMap);
 }
 
 // 副作用函数
 export function effect(fn, option:any = {}){
   const _effect = new ReactiveEffect(fn, option.schedular)
-  activeEffect = _effect
   _effect.run()
 
-  const ret = _effect.run.bind(_effect) // 绑定this
-  return ret
+  const runner:any = _effect.run.bind(_effect) // 绑定this
+  runner.effect = _effect // 挂上runner对应的effect，方便通过runner查找effect
+  return runner
 }

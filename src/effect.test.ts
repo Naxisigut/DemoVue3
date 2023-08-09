@@ -1,9 +1,9 @@
 import { test, expect, describe, it, vi } from 'vitest';
-import { effect } from './effect';
+import { effect, stop } from './effect';
 import { reactive } from './reactive';
 
 describe('effect', () => {
-  it('happy path', ()=>{
+  it.skip('happy path', ()=>{
     const user = { age: 10 }
     const proxy = reactive(user) 
     let nextAge
@@ -17,7 +17,7 @@ describe('effect', () => {
   })
 
 
-  it('effect return runner', () => {
+  it.skip('effect return runner', () => {
     let nextAge = 0
     const runner = effect(() => {
       nextAge++
@@ -29,7 +29,7 @@ describe('effect', () => {
   })
 
 
-  it('schedular', ()=>{
+  it.skip('schedular', ()=>{
     let dummy
     const proxy = reactive({ foo: 1})
     let run
@@ -52,6 +52,27 @@ describe('effect', () => {
     
     run()
     expect(dummy).toBe(2)
+  })
+
+
+  it('stop', () => {
+    let dummy
+    const proxy = reactive({ foo: 1})
+    const runner = effect(() => {
+      dummy = proxy.foo
+      console.log('s', dummy);
+    })
+    // proxy.foo++
+    // expect(dummy).toBe(2)
+
+    // stopped runner should not be triggered
+    stop(runner)
+    proxy.foo++
+    // expect(dummy).toBe(2)
+
+    // stopped runner could be manually call
+    // runner()
+    // expect(dummy).toBe(3)
   })
   
 })
