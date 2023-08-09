@@ -1,7 +1,9 @@
 class ReactiveEffect{
   private fn: Function
-  constructor(_fn){
+  public schedular: any
+  constructor(_fn, schedular){
     this.fn = _fn
+    this.schedular = schedular
   }
   run(){
     this.fn()
@@ -44,14 +46,19 @@ export function trigger(target, key){
   const targetDeps = targetDepsMap.get(target)
   const keyDeps = targetDeps.get(key) as Set<ReactiveEffect>
   for (const dep of keyDeps) {
-    // console.log('trigger', keyDeps);
-    dep.run()
+    // 在trigger时，schedular优先于run
+    if(dep.schedular){
+      dep.schedular()
+    }else dep.run()
   }
 }
 
 // 副作用函数
-export function effect(fn){
-  const _effect = new ReactiveEffect(fn)
+export function effect(fn, option:any = {}){
+  const _effect = new ReactiveEffect(fn, option.schedular)
   activeEffect = _effect
   _effect.run()
+
+  const ret = _effect.run.bind(_effect) // 绑定this
+  return ret
 }
