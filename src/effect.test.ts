@@ -62,13 +62,13 @@ describe('effect', () => {
       dummy = proxy.foo
       console.log('s', dummy);
     })
-    // proxy.foo++
-    // expect(dummy).toBe(2)
+    proxy.foo++
+    expect(dummy).toBe(2)
 
     // stopped runner should not be triggered
     stop(runner)
     proxy.foo++
-    // expect(dummy).toBe(2)
+    expect(dummy).toBe(2)
 
     // stopped runner could be manually call
     // runner()

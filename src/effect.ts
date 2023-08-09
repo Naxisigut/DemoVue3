@@ -9,7 +9,12 @@ class ReactiveEffect{
   }
   run(){
     activeEffect = this
-    this.fn()
+    return this.fn()
+  }
+  stop(){
+    for (const keyDeps of this.deps) {
+      keyDeps.delete(this)
+    }
   }
 }
 
@@ -63,10 +68,7 @@ export function trigger(target, key){
 
 export function stop(runner){
   const effect = runner.effect as ReactiveEffect
-  for (const keyDeps of effect.deps) {
-    keyDeps.delete(effect)
-  }
-  console.log('stop', targetDepsMap);
+  effect.stop()
 }
 
 // 副作用函数
