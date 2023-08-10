@@ -3,7 +3,7 @@ import { effect, stop } from './effect';
 import { reactive } from './reactive';
 
 describe('effect', () => {
-  it.skip('happy path', ()=>{
+  it('happy path', ()=>{
     const user = { age: 10 }
     const proxy = reactive(user) 
     let nextAge
@@ -17,7 +17,7 @@ describe('effect', () => {
   })
 
 
-  it.skip('effect return runner', () => {
+  it('effect return runner', () => {
     let nextAge = 0
     const runner = effect(() => {
       nextAge++
@@ -29,7 +29,7 @@ describe('effect', () => {
   })
 
 
-  it.skip('schedular', ()=>{
+  it('schedular', ()=>{
     let dummy
     const proxy = reactive({ foo: 1})
     let run
@@ -60,19 +60,18 @@ describe('effect', () => {
     const proxy = reactive({ foo: 1})
     const runner = effect(() => {
       dummy = proxy.foo
-      console.log('s', dummy);
     })
-    proxy.foo++
+    proxy.foo = 2
     expect(dummy).toBe(2)
 
     // stopped runner should not be triggered
     stop(runner)
-    proxy.foo++
+    proxy.foo = 3 // 不要用proxy.foo++ 因为只想触发set，不想触发get
     expect(dummy).toBe(2)
 
     // stopped runner could be manually call
-    // runner()
-    // expect(dummy).toBe(3)
+    runner()
+    expect(dummy).toBe(3)
   })
   
 })

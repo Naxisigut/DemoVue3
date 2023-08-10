@@ -1,20 +1,30 @@
 class ReactiveEffect{
   private fn: Function
   public schedular: any
-  public deps: Set<Set<ReactiveEffect>>
+  public deps: Set<Set<ReactiveEffect>> // 包含此effect的副作用容器的集合
+  public active: boolean
   constructor(_fn, schedular){
     this.fn = _fn
     this.schedular = schedular
     this.deps = new Set()
+    this.active = true
   }
   run(){
     activeEffect = this
     return this.fn()
   }
   stop(){
-    for (const keyDeps of this.deps) {
-      keyDeps.delete(this)
+    if(this.active){
+      clearEffect(this)
+      this.active = false
     }
+  }
+}
+
+/* 清除副作用 */
+function clearEffect(effect){
+  for (const keyDeps of effect.deps) {
+    keyDeps.delete(effect)
   }
 }
 
@@ -43,9 +53,11 @@ export function track(target, key){
     keyDeps = new Set()
     targetDeps.set(key, keyDeps)
   }
-  
-  keyDeps.add(activeEffect) // 收集依赖
 
+  // 若activeEffect为undefined，说明此时不是通过effect进入，不进行依赖收集
+  if(!activeEffect)return 
+  keyDeps.add(activeEffect) // 收集依赖
+  
   // 一个effect可能对应多个target的key，所以可能位于targetDepsMap的不同位置
   // 一个target的key也可能有多个effect
   activeEffect.deps.add(keyDeps) 
@@ -57,7 +69,7 @@ export function track(target, key){
 export function trigger(target, key){
   const targetDeps = targetDepsMap.get(target)
   const keyDeps = targetDeps.get(key) as Set<ReactiveEffect>
-  console.log(targetDepsMap);
+  // console.log(targetDepsMap);
   for (const effect of keyDeps) {
     // 在trigger时，schedular优先于run
     if(effect.schedular){
@@ -66,6 +78,8 @@ export function trigger(target, key){
   }
 }
 
+
+// 清除
 export function stop(runner){
   const effect = runner.effect as ReactiveEffect
   effect.stop()
