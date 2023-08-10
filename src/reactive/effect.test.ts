@@ -66,7 +66,7 @@ describe('effect', () => {
 
     // stopped runner should not be triggered
     stop(runner)
-    proxy.foo = 3 // 不要用proxy.foo++ 因为只想触发set，不想触发get
+    proxy.foo++// 不要用proxy.foo++ 因为只想触发set，不想触发get
     expect(dummy).toBe(2)
 
     // stopped runner could be manually call

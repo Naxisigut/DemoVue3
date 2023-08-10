@@ -13,8 +13,17 @@ class ReactiveEffect{
     this.active = true
   }
   run(){
+    if(!this.active){
+      // 若effect已处于stopped，则不用收集这个effect，直接执行fn即可
+      return this.fn()
+    }
+    
+    shouldTrack = true // 在真正需要track的时候打开shouldTrack
     activeEffect = this
-    return this.fn()
+    const res = this.fn()
+    shouldTrack = false // fn执行完后关闭shouldTrack
+
+    return res
   }
   stop(){
     if(this.active){
@@ -27,12 +36,23 @@ class ReactiveEffect{
 
 /* 清除副作用 */
 function clearEffect(effect){
+  // 双向清空
+  // 1,从容器中删除effect
   for (const keyDeps of effect.deps) {
     keyDeps.delete(effect)
   }
+  // 2.清空effect中的容器
+  effect.deps.length = 0
 }
 
 let activeEffect // 当前进行依赖收集的副作用函数
+let shouldTrack = false // 判断当前能否收集依赖
+function isTracking(){
+  // 若activeEffect为undefined，说明此时不是通过effect进入，不进行依赖收集
+  // 若shouldTrack为false, 说明此时的activeEffect为stopped状态，不进行依赖收集
+  // 两者均为truthy时，表示正要track
+  return shouldTrack && activeEffect
+}
 
 /**
  * 依赖存放的数据结构为：
@@ -44,6 +64,8 @@ const targetDepsMap = new Map() // 存放所有依赖的容器
 
 // 收集依赖
 export function track(target, key){  
+  if(!isTracking())return
+
   let targetDeps = targetDepsMap.get(target) as Map<any, any>
   // 若此对象没有收集过依赖，则初始化
   if(!targetDeps){
@@ -58,8 +80,7 @@ export function track(target, key){
     targetDeps.set(key, keyDeps)
   }
 
-  // 若activeEffect为undefined，说明此时不是通过effect进入，不进行依赖收集
-  if(!activeEffect)return 
+  if(keyDeps.has(activeEffect))return
   keyDeps.add(activeEffect) // 收集依赖
   
   // 一个effect可能对应多个target的key，所以可能位于targetDepsMap的不同位置
