@@ -1,3 +1,5 @@
+import { extend } from "../shared"
+
 class ReactiveEffect{
   private fn: Function
   public schedular: any
@@ -6,7 +8,7 @@ class ReactiveEffect{
   public active: boolean
   constructor(_fn, option){
     this.fn = _fn
-    Object.assign(this, option)
+    extend(this, option)
     this.deps = new Set()
     this.active = true
   }
