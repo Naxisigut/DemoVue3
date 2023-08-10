@@ -1,11 +1,12 @@
 class ReactiveEffect{
   private fn: Function
   public schedular: any
+  public onStop?: ()=>void
   public deps: Set<Set<ReactiveEffect>> // 包含此effect的副作用容器的集合
   public active: boolean
-  constructor(_fn, schedular){
+  constructor(_fn, option){
     this.fn = _fn
-    this.schedular = schedular
+    Object.assign(this, option)
     this.deps = new Set()
     this.active = true
   }
@@ -17,6 +18,7 @@ class ReactiveEffect{
     if(this.active){
       clearEffect(this)
       this.active = false
+      if(this.onStop)this.onStop()
     }
   }
 }
@@ -87,7 +89,7 @@ export function stop(runner){
 
 // 副作用函数
 export function effect(fn, option:any = {}){
-  const _effect = new ReactiveEffect(fn, option.schedular)
+  const _effect = new ReactiveEffect(fn, option)
   _effect.run()
 
   const runner:any = _effect.run.bind(_effect) // 绑定this
