@@ -1,9 +1,18 @@
-import { track, trigger } from './effect';
+/* proxy的get/set */
 
-const createGetter = (isReadOnly: boolean = false) => {
+import { track, trigger } from './effect';
+import { ReactiveFlags } from './reactive';
+
+const createGetter = (isReadonly: boolean = false) => {
   return function(target, key){
+    if(key === ReactiveFlags.IS_REACTIVE){
+      return !isReadonly
+    }else if(key === ReactiveFlags.IS_READONLY){
+      return isReadonly
+    }
+
     const res = Reflect.get(target, key)
-    if(!isReadOnly){
+    if(!isReadonly){
       track(target, key)
     }
     return res
@@ -29,7 +38,7 @@ export const mutableHandler = {
 }
 
 export const readonlyHandler = {
-  readonlyGet,
+  get: readonlyGet,
   set(){
     return true
   }

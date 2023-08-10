@@ -1,6 +1,6 @@
 import { expect, describe, it, vi } from 'vitest';
 import { effect, stop } from './effect';
-import { readonly } from './reactive';
+import { isReadonly, readonly } from './reactive';
 
 describe('readonly', () => {
   it('happy path', () => {
@@ -12,5 +12,12 @@ describe('readonly', () => {
     // cannot be set
     proxy.foo = 2
     expect(proxy.foo).toBe(1)
+  })
+  
+  it('isReadonly', () => {
+    const target = { foo: 1 }
+    const proxy = readonly(target)
+    expect(isReadonly(target)).toBe(false)
+    expect(isReadonly(proxy)).toBe(true)
   })
 })
