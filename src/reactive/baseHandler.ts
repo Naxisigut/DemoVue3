@@ -1,10 +1,10 @@
 /* proxy的get/set */
 
-import { isObject } from '../shared';
+import { isObject, extend } from '../shared';
 import { track, trigger } from './effect';
 import { reactive, ReactiveFlags, readonly } from './reactive';
 
-const createGetter = (isReadonly: boolean = false) => {
+const createGetter = (isReadonly: boolean = false, isShallow: boolean = false) => {
   return function(target, key){
     if(key === ReactiveFlags.IS_REACTIVE){
       return !isReadonly
@@ -16,7 +16,7 @@ const createGetter = (isReadonly: boolean = false) => {
     if(!isReadonly){
       track(target, key)
     }
-    if(isObject(res)){
+    if(isObject(res) && !isShallow){
       return isReadonly ? readonly(res) : reactive(res)
     }
     return res
@@ -35,6 +35,8 @@ const createSetter = () =>{
 const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
+const shallowReadonlyGet = createGetter(true, true)
+// const shallowMutableGet = createGetter(false, true)
 
 export const mutableHandler = {
   get,
@@ -47,3 +49,6 @@ export const readonlyHandler = {
     return true
   }
 }
+
+export const shallowReadonlyHandler = extend({}, readonlyHandler, { get: shallowReadonlyGet})
+// export const shallowMutableHandler = extend({}, mutableHandler, { get: shallowMutableGet })
