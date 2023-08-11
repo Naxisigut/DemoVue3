@@ -10,24 +10,24 @@ export enum ReactiveFlags{
   IS_READONLY = '--v--isReadonly',
 }
 
-function createActiveObject(target, baseHandler){
+function createReactiveObject(target, baseHandler){
   return new Proxy(target, baseHandler)
 }
 
 export function reactive(target){
-  return createActiveObject(target, mutableHandler)
+  return createReactiveObject(target, mutableHandler)
 }
 
 // export function shallowReactive(target){
-//   return createActiveObject(target, shallowMutableHandler)
+//   return createReactiveObject(target, shallowMutableHandler)
 // }
 
 export function readonly(target){
-  return createActiveObject(target, readonlyHandler)
+  return createReactiveObject(target, readonlyHandler)
 }
 
 export function shallowReadonly(target){
-  return createActiveObject(target, shallowReadonlyHandler)
+  return createReactiveObject(target, shallowReadonlyHandler)
 }
 
 export function isReactive(value){
