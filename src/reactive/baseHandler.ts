@@ -1,7 +1,8 @@
 /* proxy的get/set */
 
+import { isObject } from '../shared';
 import { track, trigger } from './effect';
-import { ReactiveFlags } from './reactive';
+import { reactive, ReactiveFlags, readonly } from './reactive';
 
 const createGetter = (isReadonly: boolean = false) => {
   return function(target, key){
@@ -14,6 +15,9 @@ const createGetter = (isReadonly: boolean = false) => {
     const res = Reflect.get(target, key)
     if(!isReadonly){
       track(target, key)
+    }
+    if(isObject(res)){
+      return isReadonly ? readonly(res) : reactive(res)
     }
     return res
   }

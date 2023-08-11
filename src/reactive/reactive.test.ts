@@ -22,4 +22,16 @@ describe('reactive', () => {
     expect(isReactive(target)).toBe(false)
     expect(isReactive(proxy)).toBe(true)
   })
+
+  it('deep reactive', () => {
+    const target = { 
+      nested: { foo: 1 },
+      arr: [ { foo: 2 } ]
+    }
+    const proxy = reactive(target)
+    expect(isReactive(proxy.nested)).toBe(true)
+    expect(isReactive(proxy.arr)).toBe(true)
+    expect(isReactive(proxy.arr[0])).toBe(true)
+    // expect(proxy.nested === proxy.nested).toBe(true)
+  })
 })
