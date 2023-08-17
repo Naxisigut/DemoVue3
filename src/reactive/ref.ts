@@ -1,14 +1,36 @@
+import { isEqual, isObject } from '../shared';
+import { trackEffect, triggerEffect, isTracking } from './effect';
+import { reactive } from './reactive';
+
 class RefImpl{
   private _value: any
+  private _rawValue: any // 所代理的原始对象/值
+  public deps: any
   constructor(value){
-    this._value = value
+    // 对于对象，需要返回一个reactive代理对象
+    this._value = convert(value)
+    this._rawValue = value
+    this.deps = new Set()
   }
   get value(){
+    refTrack(this)
     return this._value
   }
   set value(newVal){
-    
+    // 若设置的值与当前值一样，则不触发副作用
+    if(isEqual(this._rawValue, newVal))return
+    this._value = convert(newVal)
+    this._rawValue = newVal
+    triggerEffect(this.deps)
+    return
   }
+}
+
+function refTrack(refImpl){
+  if(isTracking())trackEffect(refImpl.deps)
+}
+function convert(newVal){
+  return isObject(newVal) ? reactive(newVal) : newVal
 }
 
 export function ref(value){

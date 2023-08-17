@@ -47,7 +47,7 @@ function clearEffect(effect){
 
 let activeEffect // 当前进行依赖收集的副作用函数
 let shouldTrack = false // 判断当前能否收集依赖
-function isTracking(){
+export function isTracking(){
   // 若activeEffect为undefined，说明此时不是通过effect进入，不进行依赖收集
   // 若shouldTrack为false, 说明此时的activeEffect为stopped状态，不进行依赖收集
   // 两者均为truthy时，表示正要track
@@ -79,14 +79,17 @@ export function track(target, key){
     keyDeps = new Set()
     targetDeps.set(key, keyDeps)
   }
-
-  if(keyDeps.has(activeEffect))return
-  keyDeps.add(activeEffect) // 收集依赖
-  
-  // 一个effect可能对应多个target的key，所以可能位于targetDepsMap的不同位置
-  // 一个target的key也可能有多个effect
-  activeEffect.deps.add(keyDeps) 
+  trackEffect(keyDeps)
   // console.log('track', keyDeps);
+}
+export function trackEffect(deps){
+  if(deps.has(activeEffect))return
+
+  // 一个effect的runner可以调用多个target的key，所以在targetDepsMap中可能有多个相同的effect
+  // 一个target的key也可能有多个effect
+  // 所以需要双向收集
+  deps.add(activeEffect) // 正向收集依赖
+  activeEffect.deps.add(deps) // 反向收集依赖 
 }
 
 
@@ -94,8 +97,10 @@ export function track(target, key){
 export function trigger(target, key){
   const targetDeps = targetDepsMap.get(target)
   const keyDeps = targetDeps.get(key) as Set<ReactiveEffect>
-  // console.log(targetDepsMap);
-  for (const effect of keyDeps) {
+  triggerEffect(keyDeps)
+}
+export function triggerEffect(deps){
+  for (const effect of deps) {
     // 在trigger时，schedular优先于run
     if(effect.schedular){
       effect.schedular()
