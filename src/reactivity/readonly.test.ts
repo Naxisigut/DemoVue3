@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+import { expect, describe, it, vi } from 'vitest';
 import { isReadonly, readonly, shallowReadonly } from './reactive';
 
 describe('readonly', () => {
@@ -9,8 +9,10 @@ describe('readonly', () => {
     expect(proxy.foo).toBe(1)
 
     // cannot be set
+    console.warn = vi.fn()
     proxy.foo = 2
     expect(proxy.foo).toBe(1)
+    expect(console.warn).toHaveBeenCalledTimes(1)
   })
   
   it('isReadonly', () => {
@@ -42,8 +44,10 @@ describe('shallowReadonly', () => {
     expect(proxy.foo).toBe(1)
 
     // cannot be set
+    console.warn = vi.fn()
     proxy.foo = 2
     expect(proxy.foo).toBe(1)
+    expect(console.warn).toHaveBeenCalledTimes(1)
   })
   
   it('isReadonly', () => {
