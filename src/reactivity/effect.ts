@@ -1,6 +1,6 @@
 import { extend } from "../shared"
 
-class ReactiveEffect{
+export class ReactiveEffect{
   private fn: Function
   public schedular: any
   public onStop?: ()=>void
@@ -84,7 +84,6 @@ export function track(target, key){
 }
 export function trackEffect(deps){
   if(deps.has(activeEffect))return
-
   // 一个effect的runner可以调用多个target的key，所以在targetDepsMap中可能有多个相同的effect
   // 一个target的key也可能有多个effect
   // 所以需要双向收集
