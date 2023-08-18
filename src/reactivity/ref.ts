@@ -1,7 +1,6 @@
 import { isEqual, isObject } from '../shared';
 import { trackEffect, triggerEffect, isTracking } from './effect';
 import { reactive } from './reactive';
-import { ReactiveFlags } from './enum';
 
 class RefImpl{
   private _value: any
