@@ -1,7 +1,7 @@
 import { expect, describe, it } from 'vitest';
 import { effect } from './effect';
 import { reactive } from './reactive';
-import { ref, isRef, unRef } from './ref';
+import { ref, isRef, unRef, proxyRefs } from './ref';
 
 describe('ref', () => {
   it('ref happy path', ()=>{
@@ -62,5 +62,37 @@ describe('ref', () => {
     const foo = ref(0)
     expect(unRef(foo)).toBe(0)
     expect(unRef(0)).toBe(0)
+  })
+
+  it('proxyRefs', () => {
+    const foo = {
+      a: ref(0),
+      b: 'b'
+    }
+    
+    // get
+    const fooProxy = proxyRefs(foo)
+    expect(foo.a.value).toBe(0)
+    expect(fooProxy.a).toBe(0)
+    expect(fooProxy.b).toBe('b')
+
+    // set normal value to ref
+    fooProxy.a = 1
+    expect(fooProxy.a).toBe(1)
+    expect(foo.a.value).toBe(1)
+
+    // // set ref value to ref
+    fooProxy.a = ref(2)
+    expect(fooProxy.a).toBe(2)
+    expect(foo.a.value).toBe(2)
+
+    // set normal value to normal
+    fooProxy.b = 'c'
+    expect(fooProxy.b).toBe('c')
+
+    // set ref value  to normal
+    fooProxy.b = ref(3)
+    expect(fooProxy.b).toBe(3)
+    expect(foo.b.value).toBe(3)
   })
 })
