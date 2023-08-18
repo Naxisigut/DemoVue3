@@ -1,11 +1,13 @@
 import { isEqual, isObject } from '../shared';
 import { trackEffect, triggerEffect, isTracking } from './effect';
 import { reactive } from './reactive';
+import { ReactiveFlags } from './enum';
 
 class RefImpl{
   private _value: any
   private _rawValue: any // 所代理的原始对象/值
   public deps: any
+  public __v__isRef = true
   constructor(value){
     // 对于对象，需要返回一个reactive代理对象
     this._value = convert(value)
@@ -36,3 +38,11 @@ function convert(newVal){
 export function ref(value){
   return new RefImpl(value)
 }
+
+export function isRef(foo){
+  return !!foo.__v__isRef
+}
+export function unRef(foo){
+  return isRef(foo) ? foo.value : foo
+}
+
