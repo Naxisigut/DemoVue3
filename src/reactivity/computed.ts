@@ -22,9 +22,6 @@ export class ComputedImpl{
     }
     return this._value
   }
-  set value(newVal){
-
-  }
 }
 
 

@@ -36,9 +36,5 @@ describe('computed',() => {
     // // will not compute when deps did not change
     console.log(dummy.value);
     expect(getter).toHaveBeenCalledTimes(2)
-
-
   })
-
-
 })
