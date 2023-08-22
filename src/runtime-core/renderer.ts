@@ -4,5 +4,9 @@ export function render(vnode, container){
 
 function patch(vnode, container){
   // 处理组件
-  processComponent()
+  processComponent(vnode, container)
+}
+
+function processComponent(vnode, container){
+
 }
