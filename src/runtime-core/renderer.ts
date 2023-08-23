@@ -1,3 +1,5 @@
+import { processComponent } from './component';
+
 export function render(vnode, container){
   patch(vnode, container)
 }
@@ -7,6 +9,3 @@ function patch(vnode, container){
   processComponent(vnode, container)
 }
 
-function processComponent(vnode, container){
-
-}
