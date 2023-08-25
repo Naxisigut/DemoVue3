@@ -1,3 +1,1 @@
-export function core(){
-  
-}
+export { createApp } from './createApp';
