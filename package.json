@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest --ui",
-    "bundle": "rollup -c rollup.config.js"
+    "bundle": "rollup -c rollup.config.js --w"
   },
   "repository": {
     "type": "git",
