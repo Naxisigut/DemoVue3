@@ -13,7 +13,7 @@ export function setupComponent(instance) {
   // TODO init props
   // TODO init slots
 
-  // setup & render
+  // init setup & render
   // 非函数式组件
   setupStatefulComponent(instance)
 }
