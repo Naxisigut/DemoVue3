@@ -1,11 +1,11 @@
 // 创建组件实例
 export function createComponentInstance(vnode: any) {
-  const component = {
+  const instance = {
     vnode,
     type: vnode.type // component object, refer to "createVNode"
   }
 
-  return component
+  return instance
 }
 
 // 处理组件实例的属性
