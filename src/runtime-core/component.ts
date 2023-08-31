@@ -21,6 +21,18 @@ export function setupComponent(instance) {
 // 处理组件实例的属性-执行setup
 function setupStatefulComponent(instance: any) {
   const Component = instance.type
+  instance.proxy = new Proxy({}, {
+    get(target, key){
+      const { setupState, vnode } = instance
+      if(key in setupState){
+        return setupState[key]
+      }
+      if(key === '$el'){
+        return vnode.el
+      }
+    }
+  })
+
   const { setup } = Component 
   if(setup){
     const setupRes = setup() // function/object

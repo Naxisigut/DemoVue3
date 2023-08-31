@@ -32,8 +32,11 @@ function mountComponent(vnode: any, container: any) {
 
 // 执行组件实例的render
 function setupRenderEffect(instance, container: any) {
-  const subTree = instance.render() // subtree is element type vnode
+  const { proxy, vnode } = instance
+  const subTree = instance.render.call(proxy) // subtree is element type vnode
   patch(subTree, container)
+
+  vnode.el = subTree.el
 }
 
 
@@ -48,6 +51,8 @@ function mountElement(vnode, container){
   //创建dom => 添加属性 => 挂载子节点 => 挂载至容器节点
   const { type, props } = vnode
   const el = document.createElement(type)
+
+  vnode.el = el
 
   for (const key in props) {
     if (Object.prototype.hasOwnProperty.call(props, key)) {
