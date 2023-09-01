@@ -11,21 +11,21 @@ function patch(vnode, container){
     // 处理element
     processElement(vnode, container)
   }else if(isObject(type)){
-    // 处理component
+    // 处理component initialVnode
     processComponent(vnode, container)
   }
 }
 
 
-function processComponent(vnode, container){
+function processComponent(initialVnode, container){
   // 1. 初始化组件 2.更新组件
-  mountComponent(vnode, container)
+  mountComponent(initialVnode, container)
 }
 
 // 初始化组件
-function mountComponent(vnode: any, container: any) {
+function mountComponent(initialVnode: any, container: any) {
   // 初始化组件实例 => 处理组件实例（添加各种属性） => 获取组件template转化/render得到的element vNode
-  const instance = createComponentInstance(vnode)
+  const instance = createComponentInstance(initialVnode)
   setupComponent(instance)
   setupRenderEffect(instance, container)
 }
