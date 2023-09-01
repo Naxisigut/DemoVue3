@@ -1,16 +1,16 @@
-import { isObject } from '../shared/index';
 import { createComponentInstance, setupComponent } from './component';
+import { ShapeFlag } from '../shared/shapeFlag';
 
 export function render(vnode, container){
   patch(vnode, container)
 }
 
 function patch(vnode, container){
-  const { type } = vnode 
-  if(typeof type === 'string'){
+  const { shapeFlag } = vnode 
+  if(shapeFlag & ShapeFlag.ELEMENT){
     // 处理element
     processElement(vnode, container)
-  }else if(isObject(type)){
+  }else if(shapeFlag & ShapeFlag.STATEFUL_COMPONENT){
     // 处理component initialVnode
     processComponent(vnode, container)
   }
@@ -66,10 +66,10 @@ function mountElement(vnode, container){
 
 
 function mountChildren(vnode: any, el: any) {
-  const { children } = vnode
-  if(typeof children === 'string'){
+  const { children, shapeFlag } = vnode
+  if(shapeFlag & ShapeFlag.TEXT_CHILDREN){
     el.textContent = children
-  }else if(Array.isArray(children)){
+  }else if(shapeFlag & ShapeFlag.ARRAY_CHILDREN){
     children.forEach((v) => {
       patch(v, el)
     })
