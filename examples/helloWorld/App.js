@@ -8,7 +8,10 @@ export default {
     return h('div', 
     {
       class: ['bold'], 
-      id: 'test'
+      id: 'test',
+      onClick: () => {
+        console.log('click');
+      }
     }, 
     this.msg,
     // [h('div', {class: 'red'}, 'son1'), h('div', {class:  'blue'}, 'son2')]

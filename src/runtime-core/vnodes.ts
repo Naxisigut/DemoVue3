@@ -16,7 +16,7 @@ export function createVNode(type, props?, children?){
     vnode.shapeFlag |= ShapeFlag.ARRAY_CHILDREN
   }
 
-  console.log(11, vnode);
+  // console.log(11, vnode);
   return vnode
 }
 
