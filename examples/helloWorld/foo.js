@@ -5,6 +5,7 @@ export default {
   setup(props){
     console.log('1. get props in setup', props);
     // 3. props is shallowReadonly
+    props.count = 3
   },
   render(){
     // 2. can use props by This in render function

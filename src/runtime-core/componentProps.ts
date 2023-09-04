@@ -1,4 +1,3 @@
-export function initProps(instance, vnode){
-  const { props } = vnode
-  instance.props = props || {}
+export function initProps(instance, rawProps){
+  instance.props = rawProps || {}
 }
