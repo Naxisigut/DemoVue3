@@ -4,7 +4,6 @@ export default {
   name: 'foo',
   setup(props){
     console.log('1. get props in setup', props);
-
     // 3. props is shallowReadonly
   },
   render(){

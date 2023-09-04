@@ -14,8 +14,6 @@ export function createComponentInstance(vnode: any) {
 
 // 处理组件实例的属性
 export function setupComponent(instance) {
-
-  // TODO init props
   initProps(instance, instance.vnode)
   // TODO init slots
 
@@ -26,15 +24,15 @@ export function setupComponent(instance) {
 
 // 处理组件实例的属性-执行setup
 function setupStatefulComponent(instance: any) {
+  // 挂载proxy，即render中的this指向
   instance.proxy = new Proxy({_: instance}, PublicInstanceProxyHandler)
   
   const { props, type: Component } = instance
   const { setup } = Component 
   if(setup){
     const setupRes = setup(props) // function/object
-    handleSetupResult(instance, setupRes)
-  } 
-  
+    handleSetupResult(instance, setupRes || {})
+  }
 }
 
 // 处理组件实例的属性-挂载setupState
