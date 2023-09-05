@@ -5,18 +5,21 @@ export default {
   name: 'App',
   render(){
     return h('div', 
-    {
-      class: ['bold'], 
-      id: 'test',
-      onClick: () => {
-        console.log('click');
-      }
-    }, 
-    [h('div', {class: 'red'}, 'son1'), h(foo, {count: 1})]
+    {}, 
+    [
+      h(foo, {
+        count: this.count,
+        onAdd: () => {
+          console.log(this);
+          this.count++
+          console.log('get add', this.count);
+        }
+      })
+    ]
   )},
   setup(){
     return {
-      msg: 'hello world'
+      count: 1
     }
   }
 }
