@@ -1,17 +1,8 @@
-import { hasOwn } from "../shared/index";
+import { toHandlerKey } from "../shared/index"
 
-export function emit(instance, e){
+export function emit(instance, e, ...args){
   const { props } = instance
-  const captalize = (str: string) => {
-    return str[0].toUpperCase() + e.slice(1)
-  }
-  const toHandlerKey = (str: string) =>{
-    return str ? `on${captalize(str)}` : '' 
-  }
-
-  const emitName = toHandlerKey(e)
-  console.log(emitName);
-  if(hasOwn(props, emitName)){
-    props[emitName]()
-  }
+  const handlerName = toHandlerKey(e)
+  const handler = props[handlerName]
+  handler && handler(...args)
 }

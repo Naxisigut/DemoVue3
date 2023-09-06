@@ -16,7 +16,7 @@ export default {
   setup(props, {emit}){
     return {
       onClick: () => {
-        emit('add')
+        emit('add', 1, 2)
       }
     }
   },
