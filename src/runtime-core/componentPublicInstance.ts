@@ -1,7 +1,11 @@
 import { hasOwn } from "../shared/index"
 
 const publicPropertiesMap = {
-  $el: (instance)=> instance.vnode.el
+  $el: (instance)=> instance.vnode.el,
+  $slots: (instance) => {
+    console.log(111, instance.slots);
+    return instance.slots
+  }
 }
 
 export const PublicInstanceProxyHandler = {
@@ -14,7 +18,6 @@ export const PublicInstanceProxyHandler = {
     }else if(hasOwn(props, key)){
       return props[key]
     }
-
     const getter = publicPropertiesMap[key]
     if(getter)return getter(instance)
   }

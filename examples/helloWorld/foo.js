@@ -3,21 +3,14 @@ import { h } from '../../lib/demo-vue3-esm.js';
 export default {
   name: 'foo',
   render(){
+    const foo = h('div', {}, 'foo')
     return h('div', 
-    {},
-    [
-      h('div', {}, this.count.toString()),
-      h('button', {
-        onClick: this.onClick
-      }, 'add')
-    ]
+      {},
+      [foo, this.$slots]
     )
   },
-  setup(props, {emit}){
+  setup(){
     return {
-      onClick: () => {
-        emit('add', 1, 2)
-      }
     }
   },
 }

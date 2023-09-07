@@ -33,7 +33,9 @@ function mountComponent(initialVnode: any, container: any) {
 // 执行组件实例的render
 function setupRenderEffect(instance, container: any) {
   const { proxy, vnode } = instance
-  const subTree = instance.render.call(proxy) // subtree is element type vnode
+  // subtree is element type vnode
+  // the result of component vnode render function must be a element vnode
+  const subTree = instance.render.call(proxy) 
   patch(subTree, container)
 
   vnode.el = subTree.el
@@ -67,7 +69,9 @@ function mountElement(vnode, container){
     }
   }
 
-  mountChildren(vnode, el)  
+  // children could be element/component vnode
+  mountChildren(vnode, el)
+  // outer dom appended will be later than its children dom
   container.appendChild(el)
 }
 
