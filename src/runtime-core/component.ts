@@ -11,7 +11,8 @@ export function createComponentInstance(vnode: any) {
     vnode,
     type: vnode.type, // component object, refer to "createVNode"
     emit: ()=>{},
-    slots: null
+    slots: {},
+    props: {}
   }
   instance.emit = emit.bind(null, instance) as any
 
@@ -21,7 +22,7 @@ export function createComponentInstance(vnode: any) {
 // 处理组件实例的属性
 export function setupComponent(instance) {
   initProps(instance, instance.vnode.props)
-  initSlots(instance, instance.vnode)
+  initSlots(instance, instance.vnode.children)
   // init setup & render
   // 非函数式组件
   setupStatefulComponent(instance)
