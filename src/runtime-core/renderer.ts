@@ -1,5 +1,6 @@
 import { createComponentInstance, setupComponent } from './component';
 import { ShapeFlag } from '../shared/shapeFlag';
+import { isOn } from '../shared/index';
 
 export function render(vnode, container){
   patch(vnode, container)
@@ -57,7 +58,6 @@ function mountElement(vnode, container){
   vnode.el = el
 
   for (const key in props) {
-    const isOn = (str: string)=> /^on[A-Z]/.test(str)
     if (Object.prototype.hasOwnProperty.call(props, key)) {
       const val = props[key]
       if(isOn(key)){

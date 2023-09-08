@@ -28,3 +28,8 @@ export const camelize = (str: string) => {
 export const toHandlerKey = (str: string) =>{
   return str ? camelize(`on${captalize(str)}`) : '' 
 }
+
+// 是否以on开头
+export const isOn = (str: string) => {
+  return /^on[A-Z]/.test(str)
+}
