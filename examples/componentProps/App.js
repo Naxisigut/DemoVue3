@@ -1,18 +1,18 @@
 import { h } from '../../lib/demo-vue3-esm.js';
+import foo from './foo.js';
 
-self = null
 export default {
+  name: 'App',
   render(){
-    self = this
-    // console.log(this.$el);
     return h('div', 
     {
       class: ['bold'], 
-      id: 'test'
+      id: 'test',
+      onClick: () => {
+        console.log('click');
+      }
     }, 
-    this.msg,
-    // [h('div', {class: 'red'}, 'son1'), h('div', {class:  'blue'}, 'son2')]
-    // 'hello vue3'
+    [h('div', {class: 'red'}, 'son1'), h(foo, {count: 1})]
   )},
   setup(){
     return {
