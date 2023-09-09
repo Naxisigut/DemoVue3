@@ -18,9 +18,7 @@ function normalizeObjectSlots(children, slots){
   }
 }
 
-function normalizeSlot(slot){
-  return Array.isArray(slot) ? slot : [slot]
+function normalizeSlot(slotVnode){
+  return Array.isArray(slotVnode) ? slotVnode : [slotVnode]
   // return [slot]
 }
-
-
