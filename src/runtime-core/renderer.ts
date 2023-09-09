@@ -1,19 +1,33 @@
 import { createComponentInstance, setupComponent } from './component';
 import { ShapeFlag } from '../shared/shapeFlag';
 import { isOn } from '../shared/index';
+import { Fragment } from './vnodes';
 
 export function render(vnode, container){
   patch(vnode, container)
 }
 
+function processFragment(vnode, container){
+  mountChildren(vnode, container)
+}
+
 function patch(vnode, container){
-  const { shapeFlag } = vnode 
-  if(shapeFlag & ShapeFlag.ELEMENT){
-    // 处理element
-    processElement(vnode, container)
-  }else if(shapeFlag & ShapeFlag.STATEFUL_COMPONENT){
-    // 处理component initialVnode
-    processComponent(vnode, container)
+  const { type, shapeFlag } = vnode 
+  // TODO: fragment => shapeFlag
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container)
+      break;
+  
+    default:
+      if(shapeFlag & ShapeFlag.ELEMENT){
+        // 处理element
+        processElement(vnode, container)
+      }else if(shapeFlag & ShapeFlag.STATEFUL_COMPONENT){
+        // 处理component initialVnode
+        processComponent(vnode, container)
+      }
+      break;
   }
 }
 

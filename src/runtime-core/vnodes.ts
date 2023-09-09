@@ -1,6 +1,8 @@
 import { isObject } from '../shared/index';
 import { ShapeFlag } from '../shared/shapeFlag';
 
+export const Fragment = Symbol('Fragment')
+
 export function createVNode(type, props?, children?){
   const vnode = {
     type, 

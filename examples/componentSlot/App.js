@@ -11,8 +11,8 @@ export default {
     // component类型的children vnode
     const foo = h(Foo, {}, 
       {
-        'header': ( scope )=> h('div', {}, scope.name),
-        'footer': ( scope )=> h('div', {}, scope.name),
+        'header': ( scope )=> h('p', {}, scope.name),
+        'footer': ( scope )=> h('p', {}, scope.name),
       }
     )
      
