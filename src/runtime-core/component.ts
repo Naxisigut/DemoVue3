@@ -3,6 +3,7 @@ import { emit } from "./componentEmit";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandler } from "./componentPublicInstance"
 import { initSlots } from "./componentSlots";
+import { setCurrentInstance } from "./getCurrentInstance";
 
 // 创建组件实例
 export function createComponentInstance(vnode: any) {
@@ -28,6 +29,7 @@ export function setupComponent(instance) {
   setupStatefulComponent(instance)
 }
 
+// let currentInstance = null
 // 处理组件实例的属性-执行setup
 function setupStatefulComponent(instance: any) {
   // 挂载proxy，即render中的this指向
@@ -36,9 +38,11 @@ function setupStatefulComponent(instance: any) {
   const { props, type: Component, emit } = instance
   const { setup } = Component 
   if(setup){
+    setCurrentInstance(instance)
     const setupRes = setup(shallowReadonly(props), {emit}) // function/object
     handleSetupResult(instance, setupRes || {})
   }
+  setCurrentInstance(null)
 }
 
 // 处理组件实例的属性-挂载setupState
@@ -56,6 +60,7 @@ function finishComponentSetup(instance: any) {
     instance.render = Component.render
   }
 }
+
 
 
 
