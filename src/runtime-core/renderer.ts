@@ -4,15 +4,15 @@ import { isOn } from '../shared/index';
 import { Fragment, Text } from './vnodes';
 
 export function render(vnode, container){
-  patch(vnode, container)
+  patch(vnode, container, null)
 }
 
-function patch(vnode, container){
+function patch(vnode, container, parent){
   const { type, shapeFlag } = vnode 
   // TODO: fragment => shapeFlag
   switch (type) {
     case Fragment:
-      processFragment(vnode, container)
+      processFragment(vnode, container, parent)
       break;
     case Text:
       processText(vnode, container)
@@ -21,10 +21,10 @@ function patch(vnode, container){
     default:
       if(shapeFlag & ShapeFlag.ELEMENT){
         // 处理element
-        processElement(vnode, container)
+        processElement(vnode, container, parent)
       }else if(shapeFlag & ShapeFlag.STATEFUL_COMPONENT){
         // 处理component initialVnode
-        processComponent(vnode, container)
+        processComponent(vnode, container, parent)
       }
       break;
   }
@@ -38,20 +38,20 @@ function processText(vnode: any, container: any) {
   container.appendChild(el)
 }
 
-function processFragment(vnode, container){
+function processFragment(vnode, container, parent){
   // Fragment类型的vnode，只渲染子节点
-  mountChildren(vnode, container)
+  mountChildren(vnode, container, parent)
 }
 
-function processComponent(initialVnode, container){
+function processComponent(initialVnode, container, parent){
   // 1. 初始化组件 2.更新组件
-  mountComponent(initialVnode, container)
+  mountComponent(initialVnode, container, parent)
 }
 
 // 初始化组件
-function mountComponent(initialVnode: any, container: any) {
+function mountComponent(initialVnode: any, container: any, parent) {
   // 初始化组件实例 => 处理组件实例（添加各种属性） => 获取组件template转化/render得到的element vNode
-  const instance = createComponentInstance(initialVnode)
+  const instance = createComponentInstance(initialVnode, parent)
   setupComponent(instance)
   setupRenderEffect(instance, container)
 }
@@ -62,20 +62,20 @@ function setupRenderEffect(instance, container: any) {
   // subtree is element type vnode
   // the result of component vnode render function must be a element vnode
   const subTree = instance.render.call(proxy) 
-  patch(subTree, container)
+  patch(subTree, container, instance) // parent Instance
 
   vnode.el = subTree.el
 }
 
 
 
-function processElement(vnode: any, container: any) {
+function processElement(vnode: any, container: any, parent) {
   // 1. 初始化dom 2. 更新dom
-  mountElement(vnode, container)
+  mountElement(vnode, container, parent)
 }
 
 // 初始化dom
-function mountElement(vnode, container){
+function mountElement(vnode, container, parent){
   //创建dom => 添加属性 => 挂载子节点 => 挂载至容器节点
   const { type, props } = vnode
   const el = document.createElement(type)
@@ -95,19 +95,19 @@ function mountElement(vnode, container){
   }
 
   // children could be element/component vnode
-  mountChildren(vnode, el)
+  mountChildren(vnode, el, parent)
   // outer dom appended will be later than its children dom
   container.appendChild(el)
 }
 
 
-function mountChildren(vnode: any, el: any) {
+function mountChildren(vnode: any, el: any, parent) {
   const { children, shapeFlag } = vnode
   if(shapeFlag & ShapeFlag.TEXT_CHILDREN){
     el.textContent = children
   }else if(shapeFlag & ShapeFlag.ARRAY_CHILDREN){
     children.forEach((v) => {
-      patch(v, el)
+      patch(v, el, parent)
     })
   }
 }

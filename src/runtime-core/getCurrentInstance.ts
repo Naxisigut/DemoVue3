@@ -1,4 +1,4 @@
-let currComponent = null
+let currComponent: any = null
 export function setCurrentInstance(instance){
   currComponent = instance
 }

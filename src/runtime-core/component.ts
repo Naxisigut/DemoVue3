@@ -6,14 +6,19 @@ import { initSlots } from "./componentSlots";
 import { setCurrentInstance } from "./getCurrentInstance";
 
 // 创建组件实例
-export function createComponentInstance(vnode: any) {
+export function createComponentInstance(vnode: any, parent) {
   const instance = {
     name: vnode.type.name,
     vnode,
     type: vnode.type, // component object, refer to "createVNode"
     emit: ()=>{},
     slots: {},
-    props: {}
+    props: {},
+    provides: parent ? parent.provides : {},
+    parent
+    // parent,
+    // el,
+    // render
   }
   instance.emit = emit.bind(null, instance) as any
 
