@@ -1,14 +1,10 @@
 import { createComponentInstance, setupComponent } from './component';
 import { ShapeFlag } from '../shared/shapeFlag';
 import { isOn } from '../shared/index';
-import { Fragment } from './vnodes';
+import { Fragment, Text } from './vnodes';
 
 export function render(vnode, container){
   patch(vnode, container)
-}
-
-function processFragment(vnode, container){
-  mountChildren(vnode, container)
 }
 
 function patch(vnode, container){
@@ -17,6 +13,9 @@ function patch(vnode, container){
   switch (type) {
     case Fragment:
       processFragment(vnode, container)
+      break;
+    case Text:
+      processText(vnode, container)
       break;
   
     default:
@@ -31,6 +30,18 @@ function patch(vnode, container){
   }
 }
 
+
+function processText(vnode: any, container: any) {
+  const { children } = vnode
+  const el = document.createTextNode(children)
+  vnode.el = el
+  container.appendChild(el)
+}
+
+function processFragment(vnode, container){
+  // Fragment类型的vnode，只渲染子节点
+  mountChildren(vnode, container)
+}
 
 function processComponent(initialVnode, container){
   // 1. 初始化组件 2.更新组件
