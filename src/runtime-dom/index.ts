@@ -1,17 +1,21 @@
-import { createAppApi } from '../runtime-core/index';
+import { createRenderer } from '../runtime-core/index';
+import { isOn } from '../shared/index';
 
-function createElement(){
-  
+function createElement(type){
+  return document.createElement(type)
 }
 
-
-function patchProp(){
-
+function patchProp(key, val, el){
+  if(isOn(key)){
+    const e = key.slice(2).toLowerCase()
+    el.addEventListener(e, val)
+  }else{
+    el.setAttribute(key, val)
+  }
 }
 
-
-function insert(){
-
+function insert(el, container){
+  container.appendChild(el)
 }
 
 const option = {
@@ -20,5 +24,9 @@ const option = {
   insert
 }
 
+const renderer: any = createRenderer(option)
+export function createApp(...args){
+  return renderer.createApp(...args)
+}
+
 export * from "../runtime-core/index"
-export const createApp = createAppApi(option)

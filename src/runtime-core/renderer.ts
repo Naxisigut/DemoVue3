@@ -1,7 +1,7 @@
 import { createComponentInstance, setupComponent } from './component';
 import { ShapeFlag } from '../shared/shapeFlag';
-import { isOn } from '../shared/index';
 import { Fragment, Text } from './vnodes';
+import { createAppApi } from './createApp';
 
 
 export function createRenderer(option) {
@@ -12,7 +12,7 @@ export function createRenderer(option) {
   } = option
 
 
-  return function render(vnode, container) {
+  function render(vnode, container) {
     patch(vnode, container, null)
   }
 
@@ -122,5 +122,9 @@ export function createRenderer(option) {
         patch(v, el, parent)
       })
     }
+  }
+
+  return {
+    createApp: createAppApi(render)
   }
 }
