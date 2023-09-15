@@ -6,9 +6,9 @@ import { createAppApi } from './createApp';
 
 export function createRenderer(option) {
   const {
-    createElement,
-    patchProp,
-    insert
+    createElement: hostCreateElement,
+    patchProp: hostPatchProp,
+    insert: hostInsert
   } = option
 
 
@@ -88,7 +88,7 @@ export function createRenderer(option) {
     //创建dom => 添加属性 => 挂载子节点 => 挂载至容器节点
     const { type, props } = vnode
     // const el = document.createElement(type)
-    const el = createElement(type)
+    const el = hostCreateElement(type)
 
     vnode.el = el
 
@@ -101,7 +101,7 @@ export function createRenderer(option) {
         // }else{
         //   el.setAttribute(key, val)
         // }
-        patchProp(key, val, el)
+        hostPatchProp(key, val, el)
       }
     }
 
@@ -109,7 +109,7 @@ export function createRenderer(option) {
     mountChildren(vnode, el, parent)
     // outer dom appended will be later than its children dom
     // container.appendChild(el)
-    insert(el, container)
+    hostInsert(el, container)
   }
 
 
