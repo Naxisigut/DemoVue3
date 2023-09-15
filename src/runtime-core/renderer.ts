@@ -2,6 +2,7 @@ import { createComponentInstance, setupComponent } from './component';
 import { ShapeFlag } from '../shared/shapeFlag';
 import { Fragment, Text } from './vnodes';
 import { createAppApi } from './createApp';
+import { effect } from '../reactivity/effect';
 
 
 export function createRenderer(option) {
@@ -13,27 +14,29 @@ export function createRenderer(option) {
 
 
   function render(vnode, container) {
-    patch(vnode, container, null)
+    patch(null, vnode, container, null)
   }
 
-  function patch(vnode, container, parent) {
-    const { type, shapeFlag } = vnode
+  // n1: current vnode
+  // n2: new vnode
+  function patch(n1, n2, container, parent) {
+    const { type, shapeFlag } = n2
     // TODO: fragment => shapeFlag
     switch (type) {
       case Fragment:
-        processFragment(vnode, container, parent)
+        processFragment(n2, container, parent)
         break;
       case Text:
-        processText(vnode, container)
+        processText(n2, container)
         break;
 
       default:
         if (shapeFlag & ShapeFlag.ELEMENT) {
           // 处理element
-          processElement(vnode, container, parent)
+          processElement(n1, n2, container, parent)
         } else if (shapeFlag & ShapeFlag.STATEFUL_COMPONENT) {
           // 处理component initialVnode
-          processComponent(vnode, container, parent)
+          processComponent(n2, container, parent)
         }
         break;
     }
@@ -67,27 +70,41 @@ export function createRenderer(option) {
 
   // 执行组件实例的render
   function setupRenderEffect(instance, container: any) {
-    const { proxy, vnode } = instance
-    // subtree is element type vnode
-    // the result of component vnode render function must be a element vnode
-    const subTree = instance.render.call(proxy)
-    patch(subTree, container, instance) // parent Instance
+    effect(() => {
+      if(!instance.isMounted){
+        const { proxy, vnode } = instance
+        // subtree is element type vnode
+        // the result of component vnode render function must be a element vnode
+        const newSubTree = instance.render.call(proxy)
+        vnode.el = newSubTree.el
+        patch(null, newSubTree, container, instance) // parent Instance
 
-    vnode.el = subTree.el
+        instance.isMounted = true
+        instance.subTree = newSubTree
+      }else {
+        const { proxy, vnode, subTree } = instance
+        const newSubTree = instance.render.call(proxy)
+        vnode.el = newSubTree.el
+        instance.subTree = newSubTree
+        patch(subTree, newSubTree, container, instance) // parent Instance
+      }
+    })
   }
 
 
 
-  function processElement(vnode: any, container: any, parent) {
-    // 1. 初始化dom 2. 更新dom
-    mountElement(vnode, container, parent)
+  function processElement(n1, n2: any, container: any, parent) {
+    if(!n1){
+      mountElement(n2, container, parent)
+    }else{
+      patchElement(n1, n2, container)
+    }
   }
 
   // 初始化dom
   function mountElement(vnode, container, parent) {
     //创建dom => 添加属性 => 挂载子节点 => 挂载至容器节点
     const { type, props } = vnode
-    // const el = document.createElement(type)
     const el = hostCreateElement(type)
 
     vnode.el = el
@@ -95,12 +112,6 @@ export function createRenderer(option) {
     for (const key in props) {
       if (Object.prototype.hasOwnProperty.call(props, key)) {
         const val = props[key]
-        // if(isOn(key)){
-        //   const e = key.slice(2).toLowerCase()
-        //   el.addEventListener(e, val)
-        // }else{
-        //   el.setAttribute(key, val)
-        // }
         hostPatchProp(key, val, el)
       }
     }
@@ -108,10 +119,8 @@ export function createRenderer(option) {
     // children could be element/component vnode
     mountChildren(vnode, el, parent)
     // outer dom appended will be later than its children dom
-    // container.appendChild(el)
     hostInsert(el, container)
   }
-
 
   function mountChildren(vnode: any, el: any, parent) {
     const { children, shapeFlag } = vnode
@@ -119,9 +128,15 @@ export function createRenderer(option) {
       el.textContent = children
     } else if (shapeFlag & ShapeFlag.ARRAY_CHILDREN) {
       children.forEach((v) => {
-        patch(v, el, parent)
+        patch(null, v, el, parent)
       })
     }
+  }
+
+  // 更新dom
+  function patchElement(n1, n2, container){
+    console.log('n1', n1);
+    console.log('n2', n2);
   }
 
   return {
