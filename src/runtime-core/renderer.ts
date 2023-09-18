@@ -84,7 +84,8 @@ export function createRenderer(option) {
       }else {
         const { proxy, vnode, subTree } = instance
         const newSubTree = instance.render.call(proxy)
-        vnode.el = newSubTree.el
+        // 这里不能重新
+        // vnode.el = newSubTree.el 
         instance.subTree = newSubTree
         patch(subTree, newSubTree, container, instance) // parent Instance
       }
@@ -135,8 +136,21 @@ export function createRenderer(option) {
 
   // 更新dom
   function patchElement(n1, n2, container){
-    console.log('n1', n1);
-    console.log('n2', n2);
+    const prevProps = n1.props
+    const nextProps = n2.props
+    const el = n1.el
+    console.log('n1', prevProps);
+    console.log('n2', nextProps);
+    console.log(container);
+
+    // for (const key in prevProps) {
+    //   const prevValue = prevProps[key];
+
+    //   if(!(key in nextProps)){
+
+    //   }
+    // }
+    // hostPatchProp
   }
 
   return {
