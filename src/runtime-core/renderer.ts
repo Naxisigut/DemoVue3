@@ -72,20 +72,17 @@ export function createRenderer(option) {
   function setupRenderEffect(instance, container: any) {
     effect(() => {
       if(!instance.isMounted){
-        const { proxy, vnode } = instance
+        const { proxy } = instance
         // subtree is element type vnode
         // the result of component vnode render function must be a element vnode
         const newSubTree = instance.render.call(proxy)
-        vnode.el = newSubTree.el
+        instance.subTree = newSubTree
         patch(null, newSubTree, container, instance) // parent Instance
 
         instance.isMounted = true
-        instance.subTree = newSubTree
       }else {
-        const { proxy, vnode, subTree } = instance
+        const { proxy, subTree } = instance
         const newSubTree = instance.render.call(proxy)
-        // 这里不能重新
-        // vnode.el = newSubTree.el 
         instance.subTree = newSubTree
         patch(subTree, newSubTree, container, instance) // parent Instance
       }
