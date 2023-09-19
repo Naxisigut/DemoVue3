@@ -20,15 +20,15 @@ export default {
   )},
   setup(){
     const props = ref({
-      className: ''
+      class: ''
     })
     const reset = () => {
       props.value = {}
     }
 
-    const turnBlue = () => props.value.className = 'blue'
-    const turnRed = () => props.value.className = 'red'
-    const clear = () => props.value.className = undefined
+    const turnBlue = () => props.value.class = 'blue'
+    const turnRed = () => props.value.class = 'red'
+    const clear = () => props.value.class = undefined
 
     return{
       props,

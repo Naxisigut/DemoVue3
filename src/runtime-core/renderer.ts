@@ -110,7 +110,7 @@ export function createRenderer(option) {
     for (const key in props) {
       if (Object.prototype.hasOwnProperty.call(props, key)) {
         const val = props[key]
-        hostPatchProp(key, val, el)
+        hostPatchProp(el, key, null, val)
       }
     }
 
@@ -131,26 +131,44 @@ export function createRenderer(option) {
     }
   }
 
-  // 更新dom
+  // 更新dom元素的prop
+  /**
+   * 
+   * @param n1 改变前的vnode
+   * @param n2 改变后的vnode
+   * @param container 容器
+   */
   function patchElement(n1, n2, container){
-    const prevProps = n1.props
-    const nextProps = n2.props
-    const el = n1.el
-    console.log('n1', prevProps);
-    console.log('n2', nextProps);
-    console.log(container);
+    const prevProps = n1.props || {}
+    const nextProps = n2.props || {}
+    const el = n2.el = n1.el as HTMLElement
+    console.log('prevProps', prevProps);
+    console.log('nextProps', nextProps);
+    console.log('el', el);
 
-    // for (const key in prevProps) {
-    //   const prevValue = prevProps[key];
+    patchProps(el, prevProps, nextProps)
+  }
+  
+  function patchProps(el: HTMLElement, prevProps: any, nextProps: any) {
+    for (const key in nextProps) {
+      const prevValue = prevProps[key]
+      const nextValue = nextProps[key];
+      if(prevValue !== nextValue){
+        // 所有和dom操作直接相关的代码应该交由配置对象提供的接口来完成
+        hostPatchProp(el, key, prevValue, nextValue)
+      }
+    }
 
-    //   if(!(key in nextProps)){
-
-    //   }
-    // }
-    // hostPatchProp
+    for (const key in prevProps) {
+      if(!(key in nextProps)){
+        hostPatchProp(el, key, prevProps[key], null)
+      }
+    }
   }
 
   return {
     createApp: createAppApi(render)
   }
 }
+
+

@@ -5,12 +5,17 @@ function createElement(type){
   return document.createElement(type)
 }
 
-function patchProp(key, val, el){
+function patchProp(el, key, prevVal, nextVal){
+  
   if(isOn(key)){
     const e = key.slice(2).toLowerCase()
-    el.addEventListener(e, val)
+    el.addEventListener(e, nextVal)
   }else{
-    el.setAttribute(key, val)
+    if(nextVal === undefined || nextVal === null){
+      el.removeAttribute(key)
+    }else{
+      el.setAttribute(key, nextVal)
+    }
   }
 }
 
