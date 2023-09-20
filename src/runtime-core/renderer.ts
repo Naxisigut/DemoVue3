@@ -142,11 +142,13 @@ export function createRenderer(option) {
     const prevProps = n1.props || {}
     const nextProps = n2.props || {}
     const el = n2.el = n1.el as HTMLElement
-    console.log('prevProps', prevProps);
-    console.log('nextProps', nextProps);
-    console.log('el', el);
-
     patchProps(el, prevProps, nextProps)
+
+    const prevChildren = n1.children
+    const nextChildren = n2.children
+    console.log('prevChildren', prevChildren);
+    console.log('nextChildren', nextChildren);
+    patchChildren()
   }
   
   function patchProps(el: HTMLElement, prevProps: any, nextProps: any) {
@@ -165,6 +167,12 @@ export function createRenderer(option) {
       }
     }
   }
+
+  function patchChildren(){
+    
+  }
+
+
 
   return {
     createApp: createAppApi(render)
