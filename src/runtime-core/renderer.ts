@@ -42,7 +42,14 @@ export function createRenderer(option) {
     }
   }
 
-
+  
+  /*****************************************************************************/
+  /****************************** patch: Fragment & Text ***********************/
+  /*****************************************************************************/
+  function processFragment(vnode, container, parent) {
+    // Fragment类型的vnode，只渲染子节点
+    mountChildren(vnode, container, parent)
+  }
   function processText(vnode: any, container: any) {
     const { children } = vnode
     const el = document.createTextNode(children)
@@ -50,11 +57,10 @@ export function createRenderer(option) {
     container.appendChild(el)
   }
 
-  function processFragment(vnode, container, parent) {
-    // Fragment类型的vnode，只渲染子节点
-    mountChildren(vnode, container, parent)
-  }
 
+  /*****************************************************************************/
+  /****************************** patch: Component *****************************/
+  /*****************************************************************************/
   function processComponent(initialVnode, container, parent) {
     // 1. 初始化组件 2.更新组件
     mountComponent(initialVnode, container, parent)
@@ -90,7 +96,9 @@ export function createRenderer(option) {
   }
 
 
-
+  /*****************************************************************************/
+  /******************************** patch: Element *****************************/
+  /*****************************************************************************/
   function processElement(n1, n2: any, container: any, parent) {
     if(!n1){
       mountElement(n2, container, parent)
@@ -131,7 +139,7 @@ export function createRenderer(option) {
     }
   }
 
-  // 更新dom元素的prop
+  // 更新dom元素
   /**
    * 
    * @param n1 改变前的vnode
