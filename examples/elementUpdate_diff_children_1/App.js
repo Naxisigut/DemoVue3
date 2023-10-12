@@ -1,5 +1,6 @@
 import { h, ref } from '../../lib/demo-vue3-esm.js';
 import Text2Arr from './Text2Arr.js';
+import Arr2Text from './Arr2Text.js';
 
 // 在component render执行的时候，能够拿到当前组件的element vnode tree，children element vnode，以及children component vnode
 // 至于children component的element vnode以及其children，要等到mountChildren时进行遍历patch，才能获取到
@@ -8,7 +9,8 @@ export default {
   render(){
     const changeBtn = h('button', {onClick: this.change}, 'change')
     return h('div', {}, [
-      Text2Arr, 
+      // Text2Arr, 
+      Arr2Text,
       changeBtn
     ]
   )},

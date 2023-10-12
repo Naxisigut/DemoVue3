@@ -21,6 +21,7 @@ export function createRenderer(option) {
   // n2: new vnode
   function patch(n1, n2, container, parent) {
     const { type, shapeFlag } = n2
+    console.log(111, shapeFlag);
     // TODO: fragment => shapeFlag
     switch (type) {
       case Fragment:
@@ -156,7 +157,7 @@ export function createRenderer(option) {
     const nextChildren = n2.children
     console.log('prevChildren', prevChildren);
     console.log('nextChildren', nextChildren);
-    patchChildren()
+    patchChildren(n1, n2, container)
   }
   
   function patchProps(el: HTMLElement, prevProps: any, nextProps: any) {
@@ -176,7 +177,20 @@ export function createRenderer(option) {
     }
   }
 
-  function patchChildren(){
+  function patchChildren(n1, n2, container){
+    const { children: prevChildren, shapeFlag: prevFlag } = n1
+    const { children: nextChildren, shapeFlag: nextFlag } = n2
+    // 1. array => text
+    if(prevFlag & ShapeFlag.ARRAY_CHILDREN){
+      if(nextFlag & ShapeFlag.TEXT_CHILDREN){
+        unMountChildren() // 删除array children
+        // 新增text children
+
+      }
+    }
+  }
+
+  function unMountChildren(){
     
   }
 
