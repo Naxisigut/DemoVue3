@@ -23,10 +23,17 @@ function insert(el, container){
   container.appendChild(el)
 }
 
+function removeChildren(el){
+  if(el.parentNode){
+    el.parentNode.removeChild(el)
+  }
+}
+
 const option = {
   createElement,
   patchProp,
-  insert
+  insert,
+  removeChildren,
 }
 
 const renderer: any = createRenderer(option)

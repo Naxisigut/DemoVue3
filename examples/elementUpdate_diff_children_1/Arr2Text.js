@@ -4,12 +4,12 @@ export default {
   name: 'Arr2Text',
   render(){
     const prevChildren = [
-      h('div', {}, 'child_1'),
-      h('div', {}, 'child_2')
+      h('div', {}, 'array_child_1'),
+      h('div', {}, 'array_child_2')
     ]
     const nextChildren = 'Text'
-
-    return this.isChange ? nextChildren : prevChildren
+    
+    return h('div', {}, this.isChange ? nextChildren : prevChildren)
   },
   setup(){
     window.isChange = ref(false)

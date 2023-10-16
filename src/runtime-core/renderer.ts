@@ -9,7 +9,9 @@ export function createRenderer(option) {
   const {
     createElement: hostCreateElement,
     patchProp: hostPatchProp,
-    insert: hostInsert
+    insert: hostInsert,
+    removeChildren: hostRemoveChildren,
+    createTextNode: hoseCreateTextNode,
   } = option
 
 
@@ -21,7 +23,6 @@ export function createRenderer(option) {
   // n2: new vnode
   function patch(n1, n2, container, parent) {
     const { type, shapeFlag } = n2
-    console.log(111, shapeFlag);
     // TODO: fragment => shapeFlag
     switch (type) {
       case Fragment:
@@ -104,7 +105,7 @@ export function createRenderer(option) {
     if(!n1){
       mountElement(n2, container, parent)
     }else{
-      patchElement(n1, n2, container)
+      patchElement(n1, n2, container, parent)
     }
   }
 
@@ -147,7 +148,7 @@ export function createRenderer(option) {
    * @param n2 改变后的vnode
    * @param container 容器
    */
-  function patchElement(n1, n2, container){
+  function patchElement(n1, n2, container, parent){
     const prevProps = n1.props || {}
     const nextProps = n2.props || {}
     const el = n2.el = n1.el as HTMLElement
@@ -157,7 +158,7 @@ export function createRenderer(option) {
     const nextChildren = n2.children
     console.log('prevChildren', prevChildren);
     console.log('nextChildren', nextChildren);
-    patchChildren(n1, n2, container)
+    patchChildren(n1, n2, container, parent)
   }
   
   function patchProps(el: HTMLElement, prevProps: any, nextProps: any) {
@@ -177,21 +178,33 @@ export function createRenderer(option) {
     }
   }
 
-  function patchChildren(n1, n2, container){
+  function patchChildren(n1, n2, container, parent){
     const { children: prevChildren, shapeFlag: prevFlag } = n1
     const { children: nextChildren, shapeFlag: nextFlag } = n2
     // 1. array => text
     if(prevFlag & ShapeFlag.ARRAY_CHILDREN){
       if(nextFlag & ShapeFlag.TEXT_CHILDREN){
-        unMountChildren() // 删除array children
-        // 新增text children
-
+        unMountChildren(prevChildren) // 删除array children node
+        // 新增text children node
+        const newTextChild = document.createTextNode(nextChildren)
+        n2.el.appendChild(newTextChild)
+      }
+    }else{
+      if(nextFlag & ShapeFlag.ARRAY_CHILDREN){
+        // 删除text children node
+        const textNode = n2.el.childNodes[0]
+        n2.el.removeChild(textNode)
+        // 新增array children node
+        mountChildren(n2, n2.el, parent)
       }
     }
   }
 
-  function unMountChildren(){
-    
+  function unMountChildren(prevChildren){
+    prevChildren.forEach((childVnode) => {
+      const { el } = childVnode
+      hostRemoveChildren(el)
+    })
   }
 
 

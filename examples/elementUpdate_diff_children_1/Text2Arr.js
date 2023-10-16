@@ -5,11 +5,11 @@ export default {
   render(){
     const prevChildren = 'Text'
     const nextChildren = [
-      h('div', {}, 'child_1'),
-      h('div', {}, 'child_2')
+      h('div', {}, 'array_child_1'),
+      h('div', {}, 'array_child_2')
     ]
 
-    return this.isChange ? nextChildren : prevChildren
+    return h('div', {}, this.isChange ? nextChildren : prevChildren)
   },
   setup(){
     window.isChange = ref(false)
