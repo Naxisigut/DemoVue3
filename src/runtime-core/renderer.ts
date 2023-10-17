@@ -10,8 +10,8 @@ export function createRenderer(option) {
     createElement: hostCreateElement,
     patchProp: hostPatchProp,
     insert: hostInsert,
-    removeChildren: hostRemoveChildren,
-    createTextNode: hoseCreateTextNode,
+    remove: hostRemove,
+    setElementText: hostSetElementText
   } = option
 
 
@@ -154,11 +154,11 @@ export function createRenderer(option) {
     const el = n2.el = n1.el as HTMLElement
     patchProps(el, prevProps, nextProps)
 
-    const prevChildren = n1.children
-    const nextChildren = n2.children
-    console.log('prevChildren', prevChildren);
-    console.log('nextChildren', nextChildren);
-    patchChildren(n1, n2, container, parent)
+    // const prevChildren = n1.children
+    // const nextChildren = n2.children
+    // console.log('prevChildren', prevChildren);
+    // console.log('nextChildren', nextChildren);
+    patchChildren(n1, n2, el, parent)
   }
   
   function patchProps(el: HTMLElement, prevProps: any, nextProps: any) {
@@ -181,21 +181,22 @@ export function createRenderer(option) {
   function patchChildren(n1, n2, container, parent){
     const { children: prevChildren, shapeFlag: prevFlag } = n1
     const { children: nextChildren, shapeFlag: nextFlag } = n2
-    // 1. array => text
+
     if(prevFlag & ShapeFlag.ARRAY_CHILDREN){
       if(nextFlag & ShapeFlag.TEXT_CHILDREN){
-        unMountChildren(prevChildren) // 删除array children node
-        // 新增text children node
-        const newTextChild = document.createTextNode(nextChildren)
-        n2.el.appendChild(newTextChild)
+        // 1. array => text
+        // unMountChildren(prevChildren) // 删除array children node
+        hostSetElementText(container, nextChildren) // 新增text children node
+        // ps. 由于设置元素textContent后会自动删除原有的子节点，所以这里没有必要调用unMountChildren
       }
     }else{
       if(nextFlag & ShapeFlag.ARRAY_CHILDREN){
-        // 删除text children node
-        const textNode = n2.el.childNodes[0]
-        n2.el.removeChild(textNode)
-        // 新增array children node
-        mountChildren(n2, n2.el, parent)
+        // 2. text => array
+        hostRemove(n2.el.childNodes[0]) // 删除text children node
+        mountChildren(n2, container, parent) // 新增array children node
+      }else{
+        // 3. text => text
+        hostSetElementText(container, nextChildren) // 改变textContent
       }
     }
   }
@@ -203,7 +204,7 @@ export function createRenderer(option) {
   function unMountChildren(prevChildren){
     prevChildren.forEach((childVnode) => {
       const { el } = childVnode
-      hostRemoveChildren(el)
+      hostRemove(el)
     })
   }
 

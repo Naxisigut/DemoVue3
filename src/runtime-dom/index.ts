@@ -23,17 +23,24 @@ function insert(el, container){
   container.appendChild(el)
 }
 
-function removeChildren(el){
+function remove(el){
   if(el.parentNode){
     el.parentNode.removeChild(el)
   }
+}
+
+function setElementText(el, text){
+  // const newTextChild = document.createTextNode(text)
+  // el.appendChild(newTextChild)
+  el.textContent = text
 }
 
 const option = {
   createElement,
   patchProp,
   insert,
-  removeChildren,
+  remove,
+  setElementText
 }
 
 const renderer: any = createRenderer(option)
