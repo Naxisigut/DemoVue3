@@ -49,8 +49,9 @@ export function createRenderer(option) {
   /****************************** patch: Fragment & Text ***********************/
   /*****************************************************************************/
   function processFragment(vnode, container, parent) {
+    const { children } = vnode
     // Fragment类型的vnode，只渲染子节点
-    mountChildren(vnode, container, parent)
+    mountChildren(children, container, parent)
   }
   function processText(vnode: any, container: any) {
     const { children } = vnode
@@ -112,7 +113,7 @@ export function createRenderer(option) {
   // 初始化dom
   function mountElement(vnode, container, parent) {
     //创建dom => 添加属性 => 挂载子节点 => 挂载至容器节点
-    const { type, props } = vnode
+    const { type, props, children, shapeFlag } = vnode
     const el = hostCreateElement(type)
 
     vnode.el = el
@@ -125,20 +126,19 @@ export function createRenderer(option) {
     }
 
     // children could be element/component vnode
-    mountChildren(vnode, el, parent)
+    if (shapeFlag & ShapeFlag.TEXT_CHILDREN) {
+      el.textContent = children
+    } else if (shapeFlag & ShapeFlag.ARRAY_CHILDREN) {
+      mountChildren(children, el, parent)
+    }
     // outer dom appended will be later than its children dom
     hostInsert(el, container)
   }
 
-  function mountChildren(vnode: any, el: any, parent) {
-    const { children, shapeFlag } = vnode
-    if (shapeFlag & ShapeFlag.TEXT_CHILDREN) {
-      el.textContent = children
-    } else if (shapeFlag & ShapeFlag.ARRAY_CHILDREN) {
-      children.forEach((v) => {
-        patch(null, v, el, parent)
-      })
-    }
+  function mountChildren(children: any, el: any, parent) {
+    children.forEach((v) => {
+      patch(null, v, el, parent)
+    })
   }
 
   // 更新dom元素
@@ -182,27 +182,26 @@ export function createRenderer(option) {
     const { children: prevChildren, shapeFlag: prevFlag } = n1
     const { children: nextChildren, shapeFlag: nextFlag } = n2
 
-    if(prevFlag & ShapeFlag.ARRAY_CHILDREN){
-      if(nextFlag & ShapeFlag.TEXT_CHILDREN){
-        // 1. array => text
-        // unMountChildren(prevChildren) // 删除array children node
-        hostSetElementText(container, nextChildren) // 新增text children node
-        // ps. 由于设置元素textContent后会自动删除原有的子节点，所以这里没有必要调用unMountChildren
+    if(nextFlag & ShapeFlag.TEXT_CHILDREN){
+      // 1. array => text
+      // 2. text => text
+      if(prevFlag & ShapeFlag.ARRAY_CHILDREN){
+        unMountChildren(prevChildren)
+      }
+      if(prevChildren !== nextChildren){
+        hostSetElementText(container, nextChildren) // 设置text node
       }
     }else{
-      if(nextFlag & ShapeFlag.ARRAY_CHILDREN){
-        // 2. text => array
-        hostRemove(n2.el.childNodes[0]) // 删除text children node
-        mountChildren(n2, container, parent) // 新增array children node
-      }else{
-        // 3. text => text
-        hostSetElementText(container, nextChildren) // 改变textContent
+      if(prevFlag & ShapeFlag.TEXT_CHILDREN){
+        // 3. text => array
+        hostSetElementText(container, '') // 删除text children node
+        mountChildren(nextChildren, container, parent) // 新增array children node
       }
     }
   }
 
-  function unMountChildren(prevChildren){
-    prevChildren.forEach((childVnode) => {
+  function unMountChildren(children){
+    children.forEach((childVnode) => {
       const { el } = childVnode
       hostRemove(el)
     })

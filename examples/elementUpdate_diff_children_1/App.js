@@ -10,8 +10,8 @@ export default {
   render(){
     const changeBtn = h('button', {onClick: this.change}, 'change')
     return h('div', {}, [
-      h(Arr2Text),
-      // h(Text2Arr),
+      // h(Arr2Text),
+      h(Text2Arr),
       // h(Text2Text),
       changeBtn
     ]
