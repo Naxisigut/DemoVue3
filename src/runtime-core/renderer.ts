@@ -23,7 +23,8 @@ export function createRenderer(option) {
   // n2: new vnode
   function patch(n1, n2, container, parent) {
     const { type, shapeFlag } = n2
-    // TODO: fragment => shapeFlag
+    // 注意：在常规的根组件=>子组件/子元素的常规patch过程中，所有的vNode均为component/element， 其type分别为组件对象/标签类型字符串
+    // 而这里的Fragment和Text只在处理slot时才会使用到
     switch (type) {
       case Fragment:
         processFragment(n2, container, parent)
@@ -77,7 +78,8 @@ export function createRenderer(option) {
     setupRenderEffect(instance, container)
   }
 
-  // 执行组件实例的render
+  // 执行组件实例的render并处理
+  // 在响应式数据更新时，render会被重复执行
   function setupRenderEffect(instance, container: any) {
     effect(() => {
       if(!instance.isMounted){
@@ -93,6 +95,7 @@ export function createRenderer(option) {
         const { proxy, subTree } = instance
         const newSubTree = instance.render.call(proxy)
         instance.subTree = newSubTree
+        console.log('newSubTree',  newSubTree);
         patch(subTree, newSubTree, container, instance) // parent Instance
       }
     })
@@ -160,7 +163,7 @@ export function createRenderer(option) {
     // console.log('nextChildren', nextChildren);
     patchChildren(n1, n2, el, parent)
   }
-  
+   
   function patchProps(el: HTMLElement, prevProps: any, nextProps: any) {
     for (const key in nextProps) {
       const prevValue = prevProps[key]

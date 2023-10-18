@@ -1,5 +1,6 @@
 import { h, ref } from '../../lib/demo-vue3-esm.js';
 import Text2Arr from './Text2Arr.js';
+import Arr2Arr from './Arr2Arr.js';
 import Arr2Text from './Arr2Text.js';
 import Text2Text from './Text2Text.js';
 
@@ -11,8 +12,9 @@ export default {
     const changeBtn = h('button', {onClick: this.change}, 'change')
     return h('div', {}, [
       // h(Arr2Text),
-      h(Text2Arr),
+      // h(Text2Arr),
       // h(Text2Text),
+      h(Arr2Arr),
       changeBtn
     ]
   )},
