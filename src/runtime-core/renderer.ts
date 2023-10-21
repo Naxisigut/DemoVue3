@@ -228,8 +228,6 @@ export function createRenderer(option) {
       }
       i++
     }
-    // console.log(i, e1, e2);
-
 
     // 右侧对比
     // 出此循环, e1&e2 ∈ [-1, e.length-1]
@@ -263,6 +261,53 @@ export function createRenderer(option) {
       while(i <= e1){
         hostRemove(c1[i].el)
         i++
+      }
+    }else
+    // 中间对比
+    {
+      let toBePatched = 0 // 需要patch的节点个数
+      let patched = 0 // 已经patch的节点个数
+
+      // 收集新的vnode的key为一个map
+      const keyToNewIndexMap = new Map()
+      for (let index = i; index <= e2; index++) {
+        const nextVnode = c2[index]
+        toBePatched++
+        keyToNewIndexMap.set(nextVnode.key, index)
+      }
+
+      // 遍历prevChildren, 看在nextChildren中是否有对应的新节点
+      // 有则patch，无则删除
+      for (let index = i; index <= e1; index++) {
+        const prevVnode = c1[index]
+        // 若数量上已经有足够的节点被patch，则剩下的所有节点都是需要被删除的，不用寻找对应的新节点
+        if(patched >= toBePatched){
+          // console.log(333, prevVnode);
+          hostRemove(prevVnode.el)
+          continue
+        }
+
+        let newIndex
+        if(prevVnode.key != null){
+          newIndex = keyToNewIndexMap.get(prevVnode.key)
+        }else{
+          for (let j = i; j <= e2; j++) {
+            const nextVnode = c2[j];
+            if(isSameVnode(prevVnode, nextVnode)){
+              newIndex = j
+              break
+            }
+          }
+        }
+        
+        if(newIndex){
+          const nextVnode = c2[newIndex]
+          patch(prevVnode, nextVnode, container, parent, null)
+          patched++
+        }else{
+          hostRemove(prevVnode.el)
+        }
+        
       }
     }
 
