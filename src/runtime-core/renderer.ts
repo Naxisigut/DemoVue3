@@ -267,7 +267,6 @@ export function createRenderer(option) {
     {
       let toBePatched = 0 // 需要patch的节点个数
       let patched = 0 // 已经patch的节点个数
-
       // 收集新的vnode的key为一个map
       const keyToNewIndexMap = new Map()
       for (let index = i; index <= e2; index++) {
@@ -300,7 +299,7 @@ export function createRenderer(option) {
           }
         }
         
-        if(newIndex){
+        if(newIndex !== undefined){
           const nextVnode = c2[newIndex]
           patch(prevVnode, nextVnode, container, parent, null)
           patched++
@@ -327,4 +326,46 @@ export function createRenderer(option) {
   }
 }
 
+// 获得最长递增序列的序号
+// [1, 3, 4, 5, 3, 6] => [0, 1, 2, 3, 5]
+function getSequence(arr) {
+  const p = arr.slice();
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i];
+    if (arrI !== 0) {
+      j = result[result.length - 1];
+      if (arr[j] < arrI) {
+        p[i] = j;
+        result.push(i);
+        continue;
+      }
+      u = 0;
+      v = result.length - 1;
+      while (u < v) {
+        c = (u + v) >> 1;
+        if (arr[result[c]] < arrI) {
+          u = c + 1;
+        } else {
+          v = c;
+        }
+      }
+      if (arrI < arr[result[u]]) {
+        if (u > 0) {
+          p[i] = result[u - 1];
+        }
+        result[u] = i;
+      }
+    }
+  }
+  u = result.length;
+  v = result[u - 1];
+  while (u-- > 0) {
+    result[u] = v;
+    v = p[v];
+  }
+  return result;
+}
 
