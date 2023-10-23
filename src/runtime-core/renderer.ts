@@ -279,9 +279,7 @@ export function createRenderer(option) {
       // 有则patch，无则删除
       for (let index = i; index <= e1; index++) {
         const prevVnode = c1[index]
-        // 若数量上已经有足够的节点被patch，则剩下的所有节点都是需要被删除的，不用寻找对应的新节点
-        if(patched >= toBePatched){
-          // console.log(333, prevVnode);
+        if(patched >= toBePatched){ // 若数量上已经有足够的节点被patch，则剩下的所有节点都是需要被删除的，不用寻找对应的新节点
           hostRemove(prevVnode.el)
           continue
         }
@@ -308,6 +306,12 @@ export function createRenderer(option) {
         }
         
       }
+
+      // 移动：
+      const newIndexToOldIndexMap = new Array(toBePatched)
+      for (let index = 0; index < toBePatched; index++) newIndexToOldIndexMap[index] = 0 // 初始化， [0 0 0 0...]
+      const increasingNewIndexSequence = getSequence(newIndexToOldIndexMap)
+
     }
 
   }
