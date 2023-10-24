@@ -275,6 +275,11 @@ export function createRenderer(option) {
         keyToNewIndexMap.set(nextVnode.key, index)
       }
 
+      // 收集同一个节点 在新数组中的索引=>在老数组中的索引的映射
+      // 索引为节点在新数组中除去两端后的索引；索引值为节点在老数组中的索引+1
+      const newIndexToOldIndexMap = new Array(toBePatched)
+      for (let index = 0; index < toBePatched; index++) newIndexToOldIndexMap[index] = 0 // 初始化， [0 0 0 0...]
+
       // 遍历prevChildren, 看在nextChildren中是否有对应的新节点
       // 有则patch，无则删除
       for (let index = i; index <= e1; index++) {
@@ -301,6 +306,7 @@ export function createRenderer(option) {
           const nextVnode = c2[newIndex]
           patch(prevVnode, nextVnode, container, parent, null)
           patched++
+          newIndexToOldIndexMap[newIndex - i] = index + 1 // index + 1是为了避免index为0的情况
         }else{
           hostRemove(prevVnode.el)
         }
@@ -308,9 +314,8 @@ export function createRenderer(option) {
       }
 
       // 移动：
-      const newIndexToOldIndexMap = new Array(toBePatched)
-      for (let index = 0; index < toBePatched; index++) newIndexToOldIndexMap[index] = 0 // 初始化， [0 0 0 0...]
       const increasingNewIndexSequence = getSequence(newIndexToOldIndexMap)
+      console.log(newIndexToOldIndexMap, increasingNewIndexSequence);
 
     }
 

@@ -91,28 +91,54 @@ import { h, ref } from '../../lib/demo-vue3-esm.js';
 //   h('div', { key: "C"}, 'C'),
 // ]
 
-/* 5.1. 中间对比 */
+/* 5.1. 中间对比-旧节点的删除 */
 // A B (C D E) F G
 // A B (D C) F G
 // i e1 e2: 0 0 -1
+// const prevChildren = [
+//   h('div', { key: "A"}, 'A'),
+//   h('div', { key: "B"}, 'B'),
+//   h('div', { key: "C", id: "prev_c"}, 'C'),
+//   h('div', { key: "D"}, 'D'),
+//   h('div', { key: "E"}, 'E'),
+//   h('div', {}, 'H'),
+//   h('div', { key: "F"}, 'F'),
+//   h('div', { key: "G"}, 'G'),
+// ]
+// const nextChildren = [
+//   h('div', { key: "A"}, 'A'),
+//   h('div', { key: "B"}, 'B'),
+//   h('div', { key: "D"}, 'D'),
+//   h('div', { key: "C", id: "next_c"}, 'C'),
+//   h('div', { key: "F"}, 'F'),
+//   h('div', { key: "G"}, 'G'),
+// ]
+
+/* 5.1. 中间对比-同一节点的移动 */
+// A B (C D E) F G
+// A B (E C D) F G
+// newIndexToOldIndexMap: [5, 3, 4]
+// 最长子序列： [1,2]
+
 const prevChildren = [
-  h('div', { key: "A"}, 'A'),
-  h('div', { key: "B"}, 'B'),
-  h('div', { key: "C", id: "prev_c"}, 'C'),
-  h('div', { key: "D"}, 'D'),
-  h('div', { key: "E"}, 'E'),
-  h('div', {}, 'H'),
-  h('div', { key: "F"}, 'F'),
-  h('div', { key: "G"}, 'G'),
-]
+  h("p", { key: "A" }, "A"),
+  h("p", { key: "B" }, "B"),
+  h("p", { key: "C" }, "C"),
+  h("p", { key: "D" }, "D"),
+  h("p", { key: "E" }, "E"),
+  h("p", { key: "F" }, "F"),
+  h("p", { key: "G" }, "G"),
+];
+
 const nextChildren = [
-  h('div', { key: "A"}, 'A'),
-  h('div', { key: "B"}, 'B'),
-  h('div', { key: "D"}, 'D'),
-  h('div', { key: "C", id: "next_c"}, 'C'),
-  h('div', { key: "F"}, 'F'),
-  h('div', { key: "G"}, 'G'),
-]
+  h("p", { key: "A" }, "A"),
+  h("p", { key: "B" }, "B"),
+  h("p", { key: "E" }, "E"),
+  h("p", { key: "C" }, "C"),
+  h("p", { key: "D" }, "D"),
+  h("p", { key: "F" }, "F"),
+  h("p", { key: "G" }, "G"),
+];
 
 export default {
   name: 'Text2Arr',
