@@ -176,8 +176,8 @@ const prevChildren = [
 
 const nextChildren = [
   h("p", { key: "A" }, "A"),
-  h("p", { key: "C" }, "C"),
   h("p", { key: "D" }, "D"),
+  h("p", { key: "C" }, "C"),
   h("p", { key: "E" }, "E"),
   h("p", { key: "G" }, "G"),
   h("p", { key: "F" }, "F"),
