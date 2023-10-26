@@ -142,8 +142,29 @@ import { h, ref } from '../../lib/demo-vue3-esm.js';
 /* 5.3. 中间对比-节点未移动 */
 // A (B C D E) F
 // A (C D) F
-// newIndexToOldIndexMap: [5, 3, 4]
-// 最长子序列： [1,2]
+// newIndexToOldIndexMap: [3, 4]
+// 最长子序列： []
+// const prevChildren = [
+//   h("p", { key: "A" }, "A"),
+//   h("p", { key: "B" }, "B"),
+//   h("p", { key: "C" }, "C"),
+//   h("p", { key: "D" }, "D"),
+//   h("p", { key: "E" }, "E"),
+//   h("p", { key: "F" }, "F"),
+// ];
+
+// const nextChildren = [
+//   h("p", { key: "A" }, "A"),
+//   h("p", { key: "C" }, "C"),
+//   h("p", { key: "D" }, "D"),
+//   h("p", { key: "F" }, "F"),
+// ];
+
+/* 5.4. 中间对比-新增节点 */
+// A (B C D E) F
+// A (C D E G) F
+// newIndexToOldIndexMap: [3, 4]
+// 最长子序列： []
 const prevChildren = [
   h("p", { key: "A" }, "A"),
   h("p", { key: "B" }, "B"),
@@ -157,6 +178,8 @@ const nextChildren = [
   h("p", { key: "A" }, "A"),
   h("p", { key: "C" }, "C"),
   h("p", { key: "D" }, "D"),
+  h("p", { key: "E" }, "E"),
+  h("p", { key: "G" }, "G"),
   h("p", { key: "F" }, "F"),
 ];
 
