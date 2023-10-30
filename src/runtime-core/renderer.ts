@@ -39,7 +39,7 @@ export function createRenderer(option) {
           processElement(n1, n2, container, parent, anchor)
         } else if (shapeFlag & ShapeFlag.STATEFUL_COMPONENT) {
           // 处理component initialVnode
-          processComponent(n2, container, parent, anchor)
+          processComponent(n1, n2, container, parent, anchor)
         }
         break;
     }
@@ -65,15 +65,19 @@ export function createRenderer(option) {
   /*****************************************************************************/
   /****************************** patch: Component *****************************/
   /*****************************************************************************/
-  function processComponent(initialVnode, container, parent, anchor) {
+  function processComponent(n1, n2, container, parent, anchor) {
     // 1. 初始化组件 2.更新组件
-    mountComponent(initialVnode, container, parent, anchor)
+    if(!n1){
+      mountComponent(n2, container, parent, anchor)
+    }else{
+      updateComponent(n1, n2)
+    }
   }
 
   // 初始化组件
   function mountComponent(initialVnode: any, container: any, parent, anchor) {
     // 初始化组件实例 => 处理组件实例（添加各种属性） => 获取组件template转化/render得到的element vNode
-    const instance = createComponentInstance(initialVnode, parent)
+    const instance = initialVnode.component = createComponentInstance(initialVnode, parent)
     setupComponent(instance)
     setupRenderEffect(instance, container, anchor)
   }
@@ -81,7 +85,7 @@ export function createRenderer(option) {
   // 执行组件实例的render并处理
   // 在响应式数据更新时，render会被重复执行
   function setupRenderEffect(instance, container: any, anchor) {
-    effect(() => {
+    instance.update = effect(() => {
       if(!instance.isMounted){
         const { proxy } = instance
         // subtree is element type vnode
@@ -95,10 +99,37 @@ export function createRenderer(option) {
         const { proxy, subTree } = instance
         const newSubTree = instance.render.call(proxy)
         instance.subTree = newSubTree
-        console.log('newSubTree',  newSubTree);
+        // console.log('newSubTree',  newSubTree);
         patch(subTree, newSubTree, container, instance, anchor) // parent Instance
       }
     })
+  }
+
+  // 更新组件
+  function updateComponent(n1, n2){
+    // debugger
+    if(shouldUpdateComponent(n1, n2)){
+      console.log(1212, n1, n2);
+      n2.component = n1.component 
+      n2.component.props = n2.props
+      n2.component.update()
+    }
+  }
+
+  function shouldUpdateComponent(n1, n2){
+    const { props: prevProps } = n1
+    const { props: nextProps } = n2
+    let shouldUpdate = false
+    for (const key in nextProps) {
+      if (Object.prototype.hasOwnProperty.call(nextProps, key)) {
+        const element = nextProps[key];
+        if(prevProps[key] !== nextProps[key]){
+          shouldUpdate = true
+          break
+        }
+      }
+    }
+    return shouldUpdate
   }
 
 
@@ -242,7 +273,7 @@ export function createRenderer(option) {
       e1--
       e2--
     }
-    console.log(i, e1, e2);
+    // console.log(i, e1, e2);
 
     // 左侧&右侧新增
     if(i > e1){

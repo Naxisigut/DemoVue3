@@ -11,7 +11,8 @@ export function createVNode(type, props?, children?){
     shapeFlag: getShapeFlag(type),
     children,
     el: null,
-    key: props && props.key
+    key: props && props.key,
+    component: null,
   }
 
   // question: children为undefined?

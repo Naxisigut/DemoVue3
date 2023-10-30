@@ -6,7 +6,7 @@ export default {
   render(){
     return h('div', {}, [
       h('button', { onClick: this.changeMsg }, '改变msg'),
-      h(Child),
+      h(Child, {msg: this.msg}),
       h('button', { onClick: this.changeCount }, '改变Count'),
       h('div', {}, `count: ${this.count}`)
     ]
@@ -15,7 +15,8 @@ export default {
     const msg = ref('initial msg')
     const count = ref(0)
     const changeMsg = () => { 
-      msg.value = 'msg changed'
+      // msg.value = 'msg changed'
+      msg.value = Math.random()
     }
     const changeCount = () => {
       count.value++
