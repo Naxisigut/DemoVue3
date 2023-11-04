@@ -96,7 +96,13 @@ export function createRenderer(option) {
 
         instance.isMounted = true
       }else {
-        const { proxy, subTree } = instance
+        const { proxy, subTree, next, vnode } = instance
+        
+        if(next){
+          next.el = vnode.el
+          updateComponentPreRender(instance, next)
+        }
+        console.log(111, next, vnode);
         const newSubTree = instance.render.call(proxy)
         instance.subTree = newSubTree
         // console.log('newSubTree',  newSubTree);
@@ -110,9 +116,9 @@ export function createRenderer(option) {
     // debugger
     if(shouldUpdateComponent(n1, n2)){
       console.log(1212, n1, n2);
-      n2.component = n1.component 
-      n2.component.props = n2.props
-      n2.component.update()
+      const instance = n2.component = n1.component 
+      instance.next = n2
+      instance.update()
     }
   }
 
@@ -130,6 +136,13 @@ export function createRenderer(option) {
       }
     }
     return shouldUpdate
+  }
+
+  // 更新组件实例的props
+  function updateComponentPreRender(instance, nextVnode){
+    instance.vnode = nextVnode
+    instance.next = null
+    instance.props = nextVnode.props
   }
 
 
