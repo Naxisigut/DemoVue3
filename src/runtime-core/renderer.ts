@@ -3,6 +3,7 @@ import { ShapeFlag } from '../shared/shapeFlag';
 import { Fragment, Text } from './vnodes';
 import { createAppApi } from './createApp';
 import { effect } from '../reactivity/effect';
+import { shouldUpdateComponent } from './componetUpdateUtils';
 
 
 export function createRenderer(option) {
@@ -97,12 +98,10 @@ export function createRenderer(option) {
         instance.isMounted = true
       }else {
         const { proxy, subTree, next, vnode } = instance
-        
         if(next){
-          next.el = vnode.el
+          next.el = vnode.el // TODO：目前所有component vnode的el均为null
           updateComponentPreRender(instance, next)
         }
-        console.log(111, next, vnode);
         const newSubTree = instance.render.call(proxy)
         instance.subTree = newSubTree
         // console.log('newSubTree',  newSubTree);
@@ -113,29 +112,16 @@ export function createRenderer(option) {
 
   // 更新组件
   function updateComponent(n1, n2){
+    const instance = n2.component = n1.component 
     // debugger
     if(shouldUpdateComponent(n1, n2)){
-      console.log(1212, n1, n2);
-      const instance = n2.component = n1.component 
+      // console.log(1212, n1, n2);
       instance.next = n2
       instance.update()
+    }else{
+      n2.el = n1.el
+      instance.vnode = n2
     }
-  }
-
-  function shouldUpdateComponent(n1, n2){
-    const { props: prevProps } = n1
-    const { props: nextProps } = n2
-    let shouldUpdate = false
-    for (const key in nextProps) {
-      if (Object.prototype.hasOwnProperty.call(nextProps, key)) {
-        const element = nextProps[key];
-        if(prevProps[key] !== nextProps[key]){
-          shouldUpdate = true
-          break
-        }
-      }
-    }
-    return shouldUpdate
   }
 
   // 更新组件实例的props
