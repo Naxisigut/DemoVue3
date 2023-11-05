@@ -4,6 +4,7 @@ import { Fragment, Text } from './vnodes';
 import { createAppApi } from './createApp';
 import { effect } from '../reactivity/effect';
 import { shouldUpdateComponent } from './componetUpdateUtils';
+import { queueJobs } from './schedular';
 
 
 export function createRenderer(option) {
@@ -87,6 +88,8 @@ export function createRenderer(option) {
   // 在响应式数据更新时，render会被重复执行
   function setupRenderEffect(instance, container: any, anchor) {
     instance.update = effect(() => {
+      console.log('instance update');
+
       if(!instance.isMounted){
         const { proxy } = instance
         // subtree is element type vnode
@@ -106,6 +109,10 @@ export function createRenderer(option) {
         instance.subTree = newSubTree
         // console.log('newSubTree',  newSubTree);
         patch(subTree, newSubTree, container, instance, anchor) // parent Instance
+      }
+    }, {
+      schedular:()=>{
+        queueJobs(instance.update)
       }
     })
   }
@@ -182,6 +189,7 @@ export function createRenderer(option) {
    * @param container 容器
    */
   function patchElement(n1, n2, container, parent, anchor){
+    // console.log('patch Ele');
     const prevProps = n1.props || {}
     const nextProps = n2.props || {}
     const el = n2.el = n1.el as HTMLElement
