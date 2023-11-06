@@ -1,6 +1,7 @@
+const rp = Promise.resolve()
 export function nextTick(fn){
   // 可以传入回调，可以await
-  return fn ? Promise.resolve().then(fn) : Promise.resolve()
+  return fn ? rp.then(fn) : rp
 }
 
 export const queue: any[] = []
