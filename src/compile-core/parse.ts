@@ -30,7 +30,7 @@ function parseInterpolation(context: any) {
   const closeIndex = context.source.indexOf(closeDelimitter, openDelimitter.length)
   advanceBy(context, openDelimitter.length) // 推进至 {{ 后
   const rawContentLength = closeIndex - openDelimitter.length
-  const content = context.source.slice(0, rawContentLength)  
+  const content = context.source.slice(0, rawContentLength).trim()
   advanceBy(context, rawContentLength + closeDelimitter.length) // 推进至 }} 后
 
   return {
