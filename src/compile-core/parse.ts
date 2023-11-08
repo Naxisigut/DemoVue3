@@ -21,6 +21,13 @@ function advanceBy(context, index){
   context.source = context.source.slice(index)
 }
 
+// 对应 parseTextData
+function chop(context, length){
+  const content = context.source.slice(0, length)
+  advanceBy(context, length)
+  return content
+}
+
 function parseChildren(context: any) {
   const nodes: any = []
   let node
@@ -33,6 +40,11 @@ function parseChildren(context: any) {
       node = parseElement(context)
     }
   }
+  
+  if(!node){
+    node = parseText(context)
+  }
+
   nodes.push(node)
   return nodes
 }
@@ -43,8 +55,9 @@ function parseInterpolation(context: any) {
   const closeIndex = context.source.indexOf(closeDelimitter, openDelimitter.length)
   advanceBy(context, openDelimitter.length) // 推进至 {{ 后
   const rawContentLength = closeIndex - openDelimitter.length
-  const content = context.source.slice(0, rawContentLength).trim()
-  advanceBy(context, rawContentLength + closeDelimitter.length) // 推进至 }} 后
+  const rawContent = chop(context, rawContentLength)
+  const content = rawContent.trim()
+  advanceBy(context, closeDelimitter.length) // 推进至 }} 后
 
   return {
     type: NodeTypes.INTERPOLATION,
@@ -74,5 +87,14 @@ function parseTag(context: any) {
   advanceBy(context, 1)
 
   return tag
+}
+
+function parseText(context: any) {
+  const content = chop(context, context.source.length)
+
+  return {
+    type: NodeTypes.TEXT,
+    content
+  }
 }
 
