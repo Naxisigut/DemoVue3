@@ -2,7 +2,7 @@ import { NodeTypes } from "./ast"
 
 export function baseParse(content: any){
   const context = createParseContext(content)
-  return createRoot(parseChildren(context))
+  return createRoot(parseChildren(context, ''))
 }
 
 function createParseContext(content: any) {
@@ -28,24 +28,30 @@ function chop(context, length){
   return content
 }
 
-function parseChildren(context: any) {
-  const nodes: any = []
-  let node
+function isEnd(context, tag){
   const s = context.source
-  if(s.startsWith('{{')){
-    node = parseInterpolation(context)
-  }else if(s.startsWith('<')){
-    // 首字符为<, 相邻字符为英文字母 => element
-    if(/[a-z]/i.test(s[1])){
-      node = parseElement(context)
+  return s.length === 0 || (tag.length && s.startsWith(`</${tag}>`) )
+}
+
+function parseChildren(context: any, tag: any) {
+  const nodes: any = []
+  while(!isEnd(context, tag)){
+    let node
+    const s = context.source
+    if(s.startsWith('{{')){
+      node = parseInterpolation(context)
+    }else if(s.startsWith('<')){
+      // 首字符为<, 相邻字符为英文字母 => element
+      if(/[a-z]/i.test(s[1])){
+        node = parseElement(context)
+      }
     }
-  }
-  
-  if(!node){
-    node = parseText(context)
+    if(!node){
+      node = parseText(context)
+    }
+    nodes.push(node)
   }
 
-  nodes.push(node)
   return nodes
 }
 
@@ -71,10 +77,12 @@ function parseInterpolation(context: any) {
 
 function parseElement(context: any){
   const tag = parseTag(context)
+  const children = parseChildren(context, tag)
   parseTag(context)
   return {
     type: NodeTypes.ELEMENT,
-    tag
+    tag,
+    children
   }
 }
 
@@ -90,8 +98,11 @@ function parseTag(context: any) {
 }
 
 function parseText(context: any) {
-  const content = chop(context, context.source.length)
-
+  const endToken = '{{'
+  let endIndex = context.source.length
+  const index = context.source.indexOf(endToken)
+  if(index !== -1)endIndex = index
+  const content = chop(context, endIndex)
   return {
     type: NodeTypes.TEXT,
     content
