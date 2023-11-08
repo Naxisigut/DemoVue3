@@ -17,9 +17,22 @@ function createRoot(children: any) {
   }
 }
 
+function advanceBy(context, index){
+  context.source = context.source.slice(index)
+}
+
 function parseChildren(context: any) {
   const nodes: any = []
-  const node = parseInterpolation(context)
+  let node
+  const s = context.source
+  if(s.startsWith('{{')){
+    node = parseInterpolation(context)
+  }else if(s.startsWith('<')){
+    // 首字符为<, 相邻字符为英文字母 => element
+    if(/[a-z]/i.test(s[1])){
+      node = parseElement(context)
+    }
+  }
   nodes.push(node)
   return nodes
 }
@@ -42,7 +55,24 @@ function parseInterpolation(context: any) {
   }
 }
 
-function advanceBy(context, index){
-  context.source = context.source.slice(index)
+
+function parseElement(context: any){
+  const tag = parseTag(context)
+  parseTag(context)
+  return {
+    type: NodeTypes.ELEMENT,
+    tag
+  }
+}
+
+function parseTag(context: any) {
+  const reg = /^<\/?([a-z]+)/i
+  const match: any = reg.exec(context.source)
+  let tag = '' 
+  tag = match[1]
+  advanceBy(context, match[0].length)
+  advanceBy(context, 1)
+
+  return tag
 }
 
