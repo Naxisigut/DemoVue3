@@ -2,7 +2,7 @@ import { expect, describe, it, vi } from 'vitest';
 import { baseParse } from './parse';
 import { NodeTypes } from './ast';
 
-describe.only('simple', () => {
+describe('simple', () => {
   it('simple interpolation',() => {
     const ast = baseParse('{{message}}')
     expect(ast.children[0]).toStrictEqual({
@@ -65,5 +65,39 @@ describe('complex', () => {
         }
       ]
     })
+  })
+
+  it('edge case 1', () => {
+    const ast = baseParse('<div><p>hi,</p>{{message}}</div>')
+    console.log('-----------ast', ast);
+    expect(ast.children[0]).toStrictEqual({
+      type: NodeTypes.ELEMENT,
+      tag: 'div',
+      children:[
+        {
+          type: NodeTypes.ELEMENT,
+          tag: 'p',
+          children: [
+            {
+              type: NodeTypes.TEXT,
+              content: 'hi,'
+            }
+          ]
+        },
+        {
+          type: NodeTypes.INTERPOLATION,
+          content: {
+            type: NodeTypes.SIMPLE_EXPRESSION,
+            content: 'message'
+          }
+        }
+      ]
+    })
+  })
+
+  it('edge case 2: throw no end tag Error', () => {
+    expect(() => {
+      baseParse('<div><p></div>')
+    }).toThrowError(/^lack end tag: p$/)
   })
 })
