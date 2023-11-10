@@ -2,6 +2,7 @@ import { expect, describe, it, vi } from 'vitest';
 import { transform } from './transform';
 import { baseParse } from './parse';
 import { NodeTypes } from './ast';
+import { generate } from './codegen';
 
 describe('transform', () => {
 
@@ -19,5 +20,14 @@ describe('transform', () => {
   
     const nodeText = ast.children[0].children[0]
     expect(nodeText.content).toBe('hi, mini-vue')
+  })
+})
+
+describe('codegen', () => {
+  it('happy path', () => {
+    const ast = baseParse('hi')
+    const { code } = generate(ast)
+  
+    expect(code).toMatchSnapshot()
   })
 })
