@@ -45,7 +45,6 @@ function isEnd(context, ancestorTags){
 }
 
 function parseChildren(context: any, ancestorTags: any) {
-  debugger
   const nodes: any = []
   while(!isEnd(context, ancestorTags)){
     // debugger
