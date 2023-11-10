@@ -1,12 +1,19 @@
-export function transform(root, option){
+export function transform(root, option = {}){
   const context = createContext(root, option)
   transferNode(root, context)
+
+  createCodeGenNode(root)
+}
+
+function createCodeGenNode(root: any) {
+  root.codeGenNode = root.children[0]
 }
 
 function createContext(root: any, option: any) {
   return {
     root, 
-    NodeTransformers: option.NodeTransformers || []
+    NodeTransformers: option.NodeTransformers || [],
+    codeGenNode: root.children[0]
   }
 }
 
@@ -28,4 +35,3 @@ function transferNode(node, context){
     }
   }
 }
-

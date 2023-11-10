@@ -22,12 +22,3 @@ describe('transform', () => {
     expect(nodeText.content).toBe('hi, mini-vue')
   })
 })
-
-describe('codegen', () => {
-  it('happy path', () => {
-    const ast = baseParse('hi')
-    const { code } = generate(ast)
-  
-    expect(code).toMatchSnapshot()
-  })
-})
