@@ -7,7 +7,8 @@ export function baseParse(content: any){
 
 function createParseContext(content: any) {
   return {
-    source: content
+    source: content,
+    type: NodeTypes.ROOT
   }
 }
 

@@ -1,37 +1,64 @@
-export function transform(root, option = {}){
-  const context = createContext(root, option)
-  transferNode(root, context)
+import { NodeTypes } from "./ast";
 
-  createCodeGenNode(root)
+export function transform(root, option = {}){
+  const ctx = createContext(root, option)
+  tranverseNode(root, ctx)
+  
+  createCodeGenNode(root) // codegen入口节点
+  createCodeGenHelpers(root, ctx)
 }
 
 function createCodeGenNode(root: any) {
   root.codeGenNode = root.children[0]
 }
-
-function createContext(root: any, option: any) {
-  return {
-    root, 
-    NodeTransformers: option.NodeTransformers || [],
-    codeGenNode: root.children[0]
-  }
+function createCodeGenHelpers(root: any, ctx) {
+  root.helpers = [...ctx.helpers.keys()]
 }
 
-function transferNode(node, context){
+function createContext(root: any, option: any) {
+  const ctx = {
+    root, 
+    NodeTransformers: option.NodeTransformers || [],
+    helpers: new Map(),
+    help(key){
+      ctx.helpers.set(key, 1)
+    }
+  }
+
+  return ctx
+}
+
+function tranverseNode(node, ctx){
   // console.log('node', node);
   const {
-    NodeTransformers
-  } = context
+    NodeTransformers,
+    help
+  } = ctx
   for (let i = 0, len = NodeTransformers.length; i < len; i++) {
-    const plugin = context.NodeTransformers[i];
+    const plugin = ctx.NodeTransformers[i];
     plugin(node)
   }
 
+  switch (node.type) {
+    case NodeTypes.INTERPOLATION:
+      help('toDisplayString')
+      break;
+    case NodeTypes.ROOT:
+    case NodeTypes.ELEMENT:
+      tranverseChildren(node, ctx)
+      break;
+    default:
+  }
+
+}
+
+function tranverseChildren(node, ctx){
   const children = node.children
-  if(children){
+  if(children){ // interpolation 没有children字段
     for (let i = 0; i < children.length; i++) {
       const node = children[i];
-      transferNode(node, context)
+      tranverseNode(node, ctx)
     }
   }
 }
+
