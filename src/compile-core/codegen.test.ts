@@ -4,6 +4,7 @@ import { generate } from './codegen';
 import { transform } from './transform';
 import { transExpr } from './transformPlugins/transExpr';
 import { transElement } from './transformPlugins/transElement';
+import { transCompound } from './transformPlugins/transCompound';
 
 describe('codegen', () => {
   it('string', () => {
@@ -24,7 +25,7 @@ describe('codegen', () => {
     expect(code).toMatchSnapshot()
   })
 
-  it.only('element', () => {
+  it('element', () => {
     const ast = baseParse('<div></div>')
     transform(ast, {
       NodeTransformers: [ transExpr, transElement  ]
@@ -32,5 +33,16 @@ describe('codegen', () => {
     const { code } = generate(ast)
   
     expect(code).toMatchSnapshot()
+  })
+  
+  it.only('union', () => {
+    const ast = baseParse('<div>hi, {{message}}</div>')
+    transform(ast, {
+      NodeTransformers: [ transExpr, transElement, transCompound ]
+    })
+    const { code } = generate(ast)
+  
+    expect(code).toMatchSnapshot()
+    
   })
 })

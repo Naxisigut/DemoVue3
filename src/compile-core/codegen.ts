@@ -65,7 +65,7 @@ function genCodeByNode(node, ctx){
     
 function genText(node, ctx){
   const { push } = ctx
-  push(`'${node.content}'`)
+  push(`"${node.content}"`)
 }
 
 function genInterPolation(node: any, ctx: any) {
@@ -82,6 +82,12 @@ function genExpression(node: any, ctx: any) {
 
 function genElement(node, ctx){
   const { push } = ctx
-  push(`_${CREATE_ELEMENT_VNODE.description}('${node.tag}')`)
+  // push(`_${ CREATE_ELEMENT_VNODE.description }("${ node.tag }", null, "hi, " + _toDisplayString(_ctx.message))`)
+  push(`_${ CREATE_ELEMENT_VNODE.description }("${ node.tag }", null, `)
+  // for (let i = 0; i < node.children.length; i++) {
+  //   const childNode = node.children[i];
+  //   genCodeByNode(childNode, ctx)
+  //   push(' + ')
+  // }
 }
 
