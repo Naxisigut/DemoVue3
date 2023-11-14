@@ -1,4 +1,5 @@
 import { NodeTypes } from "./ast";
+import { TO_DISPLAY_STRING } from './runtimeHelpers';
 
 export function transform(root, option = {}){
   const ctx = createContext(root, option)
@@ -41,7 +42,7 @@ function tranverseNode(node, ctx){
 
   switch (node.type) {
     case NodeTypes.INTERPOLATION:
-      help('toDisplayString')
+      help(TO_DISPLAY_STRING) // 添加入ctx.helpers内
       break;
     case NodeTypes.ROOT:
     case NodeTypes.ELEMENT:

@@ -8,13 +8,13 @@ export function baseParse(content: any){
 function createParseContext(content: any) {
   return {
     source: content,
-    type: NodeTypes.ROOT
   }
 }
 
 function createRoot(children: any) {
   return {
-    children
+    children,
+    type: NodeTypes.ROOT
   }
 }
 

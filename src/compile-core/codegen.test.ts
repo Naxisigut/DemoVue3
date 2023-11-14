@@ -15,6 +15,7 @@ describe('codegen', () => {
 
   it('interpolation', () => {
     const ast = baseParse('{{message}}')
+    debugger
     transform(ast, {
       NodeTransformers: [ transExpr ]
     })

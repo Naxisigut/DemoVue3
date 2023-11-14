@@ -1,4 +1,5 @@
 import { NodeTypes } from "./ast"
+import { TO_DISPLAY_STRING } from "./runtimeHelpers"
 
 export function generate(ast){
   const ctx = createCodeGenCtx()
@@ -29,7 +30,7 @@ function genFunctionPreamble(ast, ctx){
   const { helpers } = ast
   if(!helpers.length)return
   const vueBinding = 'Vue'
-  const aliasHelper = (i) => `${i}: _${i}`
+  const aliasHelper = (i: symbol) => `${i.description}: _${i.description}`
   push(`const { ${helpers.map(aliasHelper).join(', ')} } = ${vueBinding}`)
   push('\n')
 }
@@ -43,7 +44,6 @@ function genFunctionNameAndArgs(ast: any, ctx: { code: string; push(str: any): v
 }
 // 生成函数代码 <-> genNode 
 function genCodeByNode(node, ctx){
-  console.log(1212, node);
   switch (node.type) {
     case NodeTypes.TEXT:
       genText(node, ctx)
@@ -67,8 +67,7 @@ function genText(node, ctx){
 
 function genInterPolation(node: any, ctx: any) {
   const { push }  = ctx
-  // push(`return _toDisplayString(_ctx.message)`)
-  push(`_toDisplayString(`)
+  push(`_${TO_DISPLAY_STRING.description}(`)
   genCodeByNode(node.content, ctx)
   push(')')
 }
