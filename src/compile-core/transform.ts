@@ -37,7 +37,7 @@ function tranverseNode(node, ctx){
   } = ctx
   for (let i = 0, len = NodeTransformers.length; i < len; i++) {
     const plugin = ctx.NodeTransformers[i];
-    plugin(node)
+    plugin(node, ctx)
   }
 
   switch (node.type) {

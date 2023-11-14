@@ -1,5 +1,5 @@
 import { NodeTypes } from "./ast"
-import { TO_DISPLAY_STRING } from "./runtimeHelpers"
+import { CREATE_ELEMENT_VNODE, TO_DISPLAY_STRING } from "./runtimeHelpers"
 
 export function generate(ast){
   const ctx = createCodeGenCtx()
@@ -54,6 +54,9 @@ function genCodeByNode(node, ctx){
     case NodeTypes.SIMPLE_EXPRESSION:
       genExpression(node, ctx)
       break;
+    case NodeTypes.ELEMENT:
+      genElement(node, ctx)
+      break;
       
       default:
         break;
@@ -75,5 +78,10 @@ function genInterPolation(node: any, ctx: any) {
 function genExpression(node: any, ctx: any) {
   const { push } = ctx
   push(`${node.content}`)
+}
+
+function genElement(node, ctx){
+  const { push } = ctx
+  push(`_${CREATE_ELEMENT_VNODE.description}('${node.tag}')`)
 }
 
